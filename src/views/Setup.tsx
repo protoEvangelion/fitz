@@ -23,8 +23,8 @@ export function SetupView() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const example = state.days[0].slots[2];
-  const exampleSets = targetSets(example, state.rung, state.formula);
-  const exampleWeight = targetWeight(example, state.rung, state.formula);
+  const nextSets = targetSets(example, 2, state.formula);
+  const nextWeight = targetWeight(example, 2, state.formula);
 
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const standalone =
@@ -120,9 +120,8 @@ export function SetupView() {
         </div>
 
         <p className="footnote" style={{ padding: "14px 0 0" }}>
-          With your numbers: {example.baseWeight} lb for one set on rung 1, then{" "}
-          {exampleWeight} lb for {exampleSets} {exampleSets === 1 ? "set" : "sets"} on rung{" "}
-          {state.rung}.
+          With your numbers: {example.baseWeight} lb for one set on rung 1, then {nextWeight} lb for{" "}
+          {nextSets} sets on rung 2. The set ceiling stops it climbing past {example.capSets}.
         </p>
       </section>
 
