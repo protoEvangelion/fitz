@@ -1,11 +1,12 @@
-import { targetsForRole } from "./library";
+import { startingWeight, targetsForRole } from "./library";
 import type { AppState, Day, Slot } from "./types";
 
 interface SlotSeed {
   role: string;
   exerciseId: string;
   rm10: number;
-  baseWeight: number;
+  /** Optional literal override. Defaults to MROUND(10RM x 0.85, 5), the sheet's rule. */
+  baseWeight?: number;
   baseSets?: number;
   capSets?: number;
   incLb?: number | null;
@@ -18,7 +19,7 @@ function slot(day: number, i: number, s: SlotSeed): Slot {
     targets: targetsForRole(s.role),
     exerciseId: s.exerciseId,
     rm10: s.rm10,
-    baseWeight: s.baseWeight,
+    baseWeight: s.baseWeight ?? startingWeight(s.rm10),
     baseSets: s.baseSets ?? 1,
     capSets: s.capSets ?? 3,
     incLb: s.incLb ?? null,
@@ -92,7 +93,7 @@ const DAY_SEEDS: Array<{
     slots: [
       { role: "Vertical Pull", exerciseId: "bodyweight-pullup", rm10: 165, baseWeight: 140 },
       { role: "Vertical Pull", exerciseId: "ft-pulldown", rm10: 90, baseWeight: 75 },
-      { role: "Horizontal Pull", exerciseId: "barbell-row-bent", rm10: 130, baseWeight: 95 },
+      { role: "Horizontal Pull", exerciseId: "barbell-row-bent", rm10: 130 },
       { role: "Biceps", exerciseId: "free-hammer", rm10: 65, baseWeight: 55 },
       { role: "Biceps", exerciseId: "barbell-curl", rm10: 55, baseWeight: 45 },
     ],
@@ -131,7 +132,7 @@ export function seedState(): AppState {
     restSec: 120,
     sound: true,
     haptics: true,
-    formula: { stepLb: 5, roundTo: 5, setsCap: 5 },
+    formula: { mode: "compound", rate: 1.1, stepLb: 5, roundTo: 5, setsCap: 5 },
     days: buildDays(),
     logs: [],
     createdAt: Date.now(),

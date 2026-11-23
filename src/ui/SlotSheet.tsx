@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { exercise } from "../state/library";
-import { targetSets, targetWeight } from "../state/formula";
+import { ladderMath, rungDelta, targetSets, targetWeight } from "../state/formula";
 import { useStore } from "../state/store";
 import type { Slot } from "../state/types";
 import { ExercisePicker } from "./Picker";
@@ -139,9 +139,7 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
           {sets} x {weight} lb · {slot.repGoal} reps
         </span>
         <span style={{ fontSize: 12, color: "var(--muted)" }}>
-          {rung === 1
-            ? `${slot.baseWeight} lb base, unchanged`
-            : `${slot.baseWeight} base + ${slot.incLb ?? state.formula.stepLb} x ${rung - 1} = ${weight}`}
+          {ladderMath(slot, rung, state.formula)}
         </span>
       </div>
 
@@ -193,25 +191,12 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
 
       <div className="field">
         <div className="row2">
-          <label>Step per rung</label>
-          <div className="segmented">
-            {[2.5, 5, 10].map((v) => (
-              <button
-                key={v}
-                className={slot.incLb === v ? "is-on" : ""}
-                onClick={() => patchSlot(dayId, slot.id, { incLb: v })}
-              >
-                {v}
-              </button>
-            ))}
-            <button
-              className={slot.incLb === null ? "is-on" : ""}
-              onClick={() => patchSlot(dayId, slot.id, { incLb: null })}
-              title="Use the global default"
-            >
-              auto
-            </button>
-          </div>
+          <label>Progression</label>
+          <span className="numfield" style={{ gap: 10 }}>
+            <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--ink-2)" }}>
+              {rungDelta(2, state.formula)}
+            </span>
+          </span>
         </div>
       </div>
 

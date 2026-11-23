@@ -19,19 +19,19 @@ Installable on iPhone, works offline, stores everything in the browser's local d
 
 ## The formula
 
-Rung 1 holds the numbers from the sheet verbatim. Everything above it is computed:
+This is the sheet's own chain, reproduced:
 
 ```
-weight(rung) = base + step * (rung - 1)     rounded to 5 lb
-sets(rung)   = base sets + (rung - 1)       capped by the lift and the set ceiling
+base        = MROUND(10RM * 0.85, 5)        rung 1
+weight(r)   = MROUND(weight(r-1) * 1.1, 5)  10% compounded, rounded each step
+sets(r)     = base sets + (r - 1)           capped by the lift and the set ceiling
 ```
 
-`base` and `base sets` are editable per lift. `step` defaults to 5 lb and can be overridden per
-lift (2.5 / 5 / 10 / global default). Set ceilings are per lift because isolation work stops
+So a 145 lb 10RM runs 125 / 140 / 155 / 170 / 185 / 205. Weight rounds at every step, exactly like
+`MROUND(J13*1.1,5)` in the sheet, which is why the chain is 105 > 115 > 125 rather than a single
+multiplication. `+ lb per rung` is still available in Setup for lifts where 10% is too much, and
+`base`/`base sets` stay editable per lift. Set ceilings are per lift because isolation work stops
 climbing at 3 sets while the big barbell lifts go to 4-5.
-
-The 10RM column is used as a starting suggestion: `85% of 10RM`, rounded to 5 lb, is the sheet's
-rule for a rung 1 weight. Tap `85%` in the lift editor to apply it.
 
 ## Words
 

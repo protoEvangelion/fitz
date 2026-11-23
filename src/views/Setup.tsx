@@ -25,6 +25,8 @@ export function SetupView() {
   const example = state.days[0].slots[2];
   const nextSets = targetSets(example, 2, state.formula);
   const nextWeight = targetWeight(example, 2, state.formula);
+  const thirdWeight = targetWeight(example, 3, state.formula);
+  const compound = state.formula.mode === "compound";
 
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const standalone =
@@ -52,38 +54,68 @@ export function SetupView() {
       <section className="lede" style={{ paddingBottom: 14 }}>
         <h1 className="day-title">How the numbers move</h1>
         <p className="day-sub">
-          Rung 1 is exactly what you wrote on the sheet. Every rung above it is computed, so you can
-          change one number and the whole ladder follows.
+          Rung 1 is 85% of your 10RM, the rule on your sheet. Every rung above compounds 10% and adds
+          a set, so changing one 10RM moves the whole ladder.
         </p>
       </section>
 
       <section className="block">
         <h2>The formula</h2>
-        <p>Two lines, no hidden cells. A rung is one pass through the same six days.</p>
+        <p>Three lines, no hidden cells. A rung is one pass through the same six days.</p>
         <div className="note">
-          <code>weight = base + step x (rung - 1)</code>
+          <code>base = MROUND(10RM x 0.85, 5)</code>
+          {compound ? (
+            <code>weight = MROUND(previous x {state.formula.rate}, 5)</code>
+          ) : (
+            <code>weight = base + {state.formula.stepLb} x (rung - 1)</code>
+          )}
           <code>sets = base sets + (rung - 1)</code>
           <span style={{ display: "block", marginTop: 8, color: "var(--dim)", fontSize: 12 }}>
-            both rounded and capped by the lift
+            rounded to {state.formula.roundTo} lb, capped by the lift
           </span>
         </div>
 
         <div className="field">
           <div className="row2">
-            <label>Pounds per rung</label>
+            <label>Progression</label>
             <div className="segmented">
-              {[2.5, 5, 10].map((v) => (
-                <button
-                  key={v}
-                  className={state.formula.stepLb === v ? "is-on" : ""}
-                  onClick={() => setFormula({ stepLb: v })}
-                >
-                  {v}
-                </button>
-              ))}
+              <button
+                className={compound && state.formula.rate === 1.1 ? "is-on" : ""}
+                onClick={() => setFormula({ mode: "compound", rate: 1.1 })}
+              >
+                x1.1
+              </button>
+              <button
+                className={compound && state.formula.rate === 1.05 ? "is-on" : ""}
+                onClick={() => setFormula({ mode: "compound", rate: 1.05 })}
+              >
+                x1.05
+              </button>
+              <button className={!compound ? "is-on" : ""} onClick={() => setFormula({ mode: "step" })}>
+                + lb
+              </button>
             </div>
           </div>
         </div>
+
+        {!compound && (
+          <div className="field">
+            <div className="row2">
+              <label>Pounds per rung</label>
+              <div className="segmented">
+                {[2.5, 5, 10].map((v) => (
+                  <button
+                    key={v}
+                    className={state.formula.stepLb === v ? "is-on" : ""}
+                    onClick={() => setFormula({ stepLb: v })}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="field">
           <div className="row2">
@@ -120,8 +152,9 @@ export function SetupView() {
         </div>
 
         <p className="footnote" style={{ padding: "14px 0 0" }}>
-          With your numbers: {example.baseWeight} lb for one set on rung 1, then {nextWeight} lb for{" "}
-          {nextSets} sets on rung 2. The set ceiling stops it climbing past {example.capSets}.
+          With your numbers: {example.rm10} 10RM gives {example.baseWeight} lb on rung 1,{" "}
+          {nextWeight} on rung 2 ({nextSets} sets), {thirdWeight} on rung 3. The set ceiling stops it
+          climbing past {example.capSets}.
         </p>
       </section>
 

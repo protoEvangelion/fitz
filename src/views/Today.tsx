@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { repText, targetSets, targetWeight, todayKey } from "../state/formula";
+import { ladderMath, repText, targetSets, targetWeight, todayKey } from "../state/formula";
 import { exercise } from "../state/library";
 import { useStore } from "../state/store";
 import { RATINGS, type Day, type Slot } from "../state/types";
@@ -132,7 +132,6 @@ function ExerciseRow({
   const ex = exercise(slot.exerciseId);
   const sets = targetSets(slot, rung, state.formula);
   const weight = targetWeight(slot, rung, state.formula);
-  const step = slot.incLb ?? state.formula.stepLb;
   const log = logFor(day.id, slot.id, rung);
   const logged = (log?.sets ?? []).slice(0, sets);
 
@@ -205,11 +204,7 @@ function ExerciseRow({
               +
             </button>
           </div>
-          <p className="formula-note">
-            {rung === 1
-              ? `${slot.baseWeight} lb · rung 1, unchanged`
-              : `${slot.baseWeight} base + ${step} x ${rung - 1} = ${weight} lb`}
-          </p>
+          <p className="formula-note">{ladderMath(slot, rung, state.formula)}</p>
 
           <div className="sets">
             {Array.from({ length: sets }, (_, i) => {

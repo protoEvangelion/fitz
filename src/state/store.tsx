@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { loadState, saveState, wipeState } from "../lib/db";
-import { exercise, targetsForRole } from "./library";
+import { exercise, startingWeight, targetsForRole } from "./library";
 import { seedState } from "./seed";
 import { todayKey } from "./formula";
 import type { AppState, Formula, Slot, SlotLog } from "./types";
@@ -50,6 +50,9 @@ function hydrate(raw: unknown): AppState {
   if (!raw || typeof raw !== "object") return seed;
   const s = raw as Partial<AppState>;
   if (!Array.isArray(s.days) || s.days.length !== 6) return seed;
+  // Older local state used the flat +lb ladder and hand-seeded rung 1 weights.
+  // Move it once onto the sheet's own rule: 85% of 10RM, then x1.1 per rung.
+  const legacy = !s.formula?.mode;
   return {
     ...seed,
     ...s,
@@ -59,6 +62,7 @@ function hydrate(raw: unknown): AppState {
       slots: d.slots.map((slot) => ({
         ...slot,
         targets: slot.targets ?? targetsForRole(slot.role),
+        baseWeight: legacy ? startingWeight(slot.rm10, seed.formula.roundTo) : slot.baseWeight,
       })),
     })),
     logs: Array.isArray(s.logs) ? s.logs : [],

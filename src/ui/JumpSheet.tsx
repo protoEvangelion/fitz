@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { rungDelta } from "../state/formula";
 import { useStore } from "../state/store";
 import { Sheet } from "./Sheet";
 
@@ -60,7 +61,7 @@ export function JumpSheet({ onClose }: { onClose: () => void }) {
       <p className="footnote" style={{ padding: "8px 0 0" }}>
         {rung === 1
           ? "Rung 1: the numbers you wrote down."
-          : `Rung ${rung}: +${rung - 1} set${rung > 2 ? "s" : ""} per lift, +${state.formula.stepLb * (rung - 1)} lb.`}
+          : `Rung ${rung}: ${rungDelta(rung, state.formula)} vs rung 1.`}
       </p>
 
       <p className="micro" style={{ margin: "18px 0 4px" }}>

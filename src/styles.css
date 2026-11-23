@@ -163,9 +163,7 @@ button {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 18px 12px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(14px) saturate(120%);
-  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  background: var(--bg);
   border-bottom: 1px solid var(--rule-soft);
 }
 
@@ -1588,15 +1586,16 @@ button {
   }
 
   .app {
-    max-width: 780px;
+    max-width: none;
+    width: 100%;
   }
 
   .topbar {
-    padding: 16px 24px 14px;
+    padding: 16px clamp(24px, 3.2vw, 40px) 14px;
   }
 
   .lede {
-    padding: 30px 24px 22px;
+    padding: 30px clamp(24px, 3.2vw, 40px) 22px;
   }
 
   .day-title {
@@ -1609,7 +1608,7 @@ button {
   }
 
   .day-tabs {
-    padding: 0 24px 20px;
+    padding: 0 clamp(24px, 3.2vw, 40px) 20px;
     gap: 8px;
   }
 
@@ -1626,7 +1625,7 @@ button {
     grid-template-columns: 30px minmax(0, 1fr) auto auto;
     grid-template-rows: auto;
     align-items: center;
-    padding: 18px 24px;
+    padding: 18px clamp(24px, 3.2vw, 40px);
     column-gap: 18px;
   }
 
@@ -1666,7 +1665,7 @@ button {
   }
 
   .row-body {
-    padding: 0 24px 24px 72px;
+    padding: 0 clamp(24px, 3.2vw, 40px) 24px calc(clamp(24px, 3.2vw, 40px) + 48px);
   }
 
   .weightbar {
@@ -1699,19 +1698,19 @@ button {
     font-size: 13px;
   }
 
-  .restbar,
   .tabbar {
-    width: min(100%, 780px);
+    width: 100%;
   }
 
   .restbar {
+    width: min(560px, calc(100vw - 48px));
     bottom: calc(var(--nav-h) + var(--safe-b) + 12px);
     border: 1px solid var(--rule);
     border-radius: 12px;
   }
 
   .block {
-    padding: 26px 24px;
+    padding: 26px clamp(24px, 3.2vw, 40px);
   }
 
   .block h2 {
@@ -1731,7 +1730,7 @@ button {
   .hist-slot,
   .footnote,
   .plan-cta {
-    padding-inline: 24px;
+    padding-inline: clamp(24px, 3.2vw, 40px);
   }
 
   .plan-title {
@@ -1806,8 +1805,9 @@ button {
 @media (min-width: 980px) {
   .app {
     display: grid;
-    grid-template-columns: 216px minmax(0, 1fr);
-    max-width: 1180px;
+    grid-template-columns: 248px minmax(0, 1fr);
+    max-width: none;
+    width: 100%;
     padding-top: 0;
   }
 
@@ -1884,8 +1884,9 @@ button {
   main.page {
     grid-column: 2;
     width: 100%;
-    max-width: 820px;
-    margin-inline: auto;
+    max-width: 1440px;
+    margin-inline: 0;
+    padding-top: var(--safe-t);
     padding-bottom: 56px;
   }
 
@@ -1894,13 +1895,148 @@ button {
   }
 
   .restbar {
-    left: calc(50% + 108px);
-    width: min(760px, calc(100vw - 260px));
+    left: calc(50% + 124px);
+    width: min(560px, calc(100vw - 300px));
     bottom: 26px;
   }
 
   .toast {
     bottom: 100px;
-    left: calc(50% + 108px);
+    left: calc(50% + 124px);
+  }
+}
+
+@media (min-width: 1200px) {
+  .app {
+    max-width: none;
+    grid-template-columns: 288px minmax(0, 1fr);
+  }
+
+  .rail {
+    padding: calc(32px + var(--safe-t)) 22px 26px;
+  }
+
+  .rail-mark {
+    margin: 0 0 30px 12px;
+  }
+
+  .railtab {
+    height: 52px;
+    font-size: 14.5px;
+  }
+
+  main.page {
+    max-width: none;
+    padding-bottom: 64px;
+  }
+
+  .lede {
+    padding: 44px clamp(32px, 3vw, 56px) 26px;
+  }
+
+  .day-title {
+    font-size: clamp(48px, 4vw, 60px);
+  }
+
+  .day-sub {
+    font-size: 16px;
+  }
+
+  .day-tabs {
+    padding: 0 clamp(32px, 3vw, 56px) 24px;
+    gap: 10px;
+  }
+
+  .daytab {
+    height: 46px;
+    font-size: 13.5px;
+  }
+
+  .row-head {
+    grid-template-columns: 34px minmax(0, 1fr) auto auto;
+    padding: 22px clamp(32px, 3vw, 56px);
+    column-gap: 22px;
+  }
+
+  .row-name {
+    font-size: 19px;
+  }
+
+  .row-target {
+    font-size: 14.5px;
+  }
+
+  .row-body {
+    padding: 0 clamp(32px, 3vw, 56px) 26px calc(clamp(32px, 3vw, 56px) + 56px);
+  }
+
+  .weight b,
+  .weight-edit {
+    font-size: 46px;
+  }
+
+  .setrow {
+    grid-template-columns: 38px 1fr 88px;
+    min-height: 60px;
+  }
+
+  .reps input {
+    font-size: 22px;
+  }
+
+  .rating {
+    min-height: 50px;
+    font-size: 13.5px;
+  }
+
+  .plan-day .slotlist {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+
+  .plan-head,
+  .plan-focus,
+  .slotrow,
+  .hist-head,
+  .hist-slot,
+  .between,
+  .plan-cta,
+  .footnote {
+    padding-inline: clamp(32px, 3vw, 56px);
+  }
+
+  .slotrow .meta {
+    font-size: 11.5px;
+  }
+
+  .block {
+    padding: 30px clamp(32px, 3vw, 56px);
+  }
+
+  .block h2 {
+    font-size: 18px;
+  }
+
+  .block p {
+    font-size: 14.5px;
+  }
+
+  .btn {
+    min-height: 52px;
+    font-size: 14.5px;
+  }
+
+  .restbar {
+    left: calc(50% + 144px);
+    width: 560px;
+  }
+
+  .toast {
+    left: calc(50% + 144px);
+    bottom: 110px;
+  }
+
+  .sheet {
+    width: min(600px, calc(100vw - 48px));
   }
 }
