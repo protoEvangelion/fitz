@@ -1,0 +1,14 @@
+# Fitz
+
+Fitz is a local-only strength training card. It runs as an installable web app on iPhone.
+
+## What it contains
+
+- Six training days, five lifts each, taken from a personal spreadsheet.
+- Six rungs: one rung is one pass through the six days. Weight and set counts scale from the rung 1 numbers.
+- Per-set logging with a five-point recovery check, kept in IndexedDB on the device.
+- An exercise bank weighted toward a functional trainer and a barbell.
+
+## Notes
+
+No account, no sync, no network requests after install.
