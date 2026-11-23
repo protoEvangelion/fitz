@@ -89,9 +89,11 @@ function Stepper({
   );
 }
 
-export function SlotSheet({ dayId, slot, onClose }: Props) {
+export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
   const { state, patchSlot, swapExercise } = useStore();
   const [picking, setPicking] = useState(false);
+  // Read the live slot: swapping a lift must not leave the editor on a stale copy.
+  const slot = state.days.find((d) => d.id === dayId)?.slots.find((s) => s.id === initial.id) ?? initial;
   const ex = exercise(slot.exerciseId);
   const rung = state.rung;
   const sets = targetSets(slot, rung, state.formula);
@@ -101,6 +103,7 @@ export function SlotSheet({ dayId, slot, onClose }: Props) {
     return (
       <ExercisePicker
         currentId={slot.exerciseId}
+        targets={slot.targets ?? []}
         onClose={() => setPicking(false)}
         onPick={(id) => {
           swapExercise(dayId, slot.id, id, slot.rm10);
@@ -115,7 +118,11 @@ export function SlotSheet({ dayId, slot, onClose }: Props) {
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 4 }}>
         <div style={{ flex: 1 }}>
           <p className="micro" style={{ marginBottom: 6 }}>
-            {ex.equip === "ft" ? "Functional trainer" : ex.equip === "barbell" ? "Barbell" : ex.equip === "free" ? "Free weight" : ex.equip === "machine" ? "Machine" : "Bodyweight"} · {ex.pattern}
+            {ex.equip === "ft" ? "Functional trainer" : ex.equip === "barbell" ? "Barbell" : ex.equip === "free" ? "Free weight" : ex.equip === "machine" ? "Machine" : "Bodyweight"}{" "}
+            · {ex.muscle}
+            {(slot.targets ?? []).length > 0 && !slot.targets.includes(ex.muscle) && (
+              <span style={{ color: "var(--amber)" }}> · outside {slot.targets.join("/")}</span>
+            )}
           </p>
           <p style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25 }}>
             {ex.name}

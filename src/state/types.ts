@@ -1,5 +1,18 @@
 export type Equip = "ft" | "barbell" | "free" | "machine" | "body";
 
+export type Muscle =
+  | "chest"
+  | "back"
+  | "shoulders"
+  | "biceps"
+  | "triceps"
+  | "quads"
+  | "hamstrings"
+  | "glutes"
+  | "calves"
+  | "abs"
+  | "traps";
+
 export type Pattern =
   | "push"
   | "pull"
@@ -16,12 +29,16 @@ export interface Exercise {
   name: string;
   equip: Equip;
   pattern: Pattern;
+  /** Primary body part. The swap list is scoped to the slot's targets. */
+  muscle: Muscle;
   hint?: string;
 }
 
 export interface Slot {
   id: string;
   role: string;
+  /** Body parts this slot is for. Empty = no scoping. */
+  targets: Muscle[];
   exerciseId: string;
   /** Estimated 10-rep max. Used to suggest a starting weight. */
   rm10: number;

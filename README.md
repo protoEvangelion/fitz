@@ -10,7 +10,8 @@ Installable on iPhone, works offline, stores everything in the browser's local d
   five-point scale after the first set.
 - **Plan** - all six days. Tap a lift to swap it from the exercise bank (functional trainer and
   barbell first, free weights, machines and bodyweight as swaps) or to change its 10RM, rung 1
-  weight, step per rung, set counts, reps and RIR.
+  weight, step per rung, set counts, reps and RIR. The swap list is scoped to the slot's body part,
+  so a chest row only offers chest lifts; "show all" is one tap away when you want to break out.
 - **Log** - every set you have logged, grouped by date, day and rung.
 - **Setup** - the formula controls, rest and cue preferences, the rating scale legend, backup
   export/import, and a reset back to rung 1.

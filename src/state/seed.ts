@@ -1,3 +1,4 @@
+import { targetsForRole } from "./library";
 import type { AppState, Day, Slot } from "./types";
 
 interface SlotSeed {
@@ -14,6 +15,7 @@ function slot(day: number, i: number, s: SlotSeed): Slot {
   return {
     id: `d${day}s${i + 1}`,
     role: s.role,
+    targets: targetsForRole(s.role),
     exerciseId: s.exerciseId,
     rm10: s.rm10,
     baseWeight: s.baseWeight,

@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { loadState, saveState, wipeState } from "../lib/db";
-import { exercise } from "./library";
+import { exercise, targetsForRole } from "./library";
 import { seedState } from "./seed";
 import { todayKey } from "./formula";
 import type { AppState, Formula, Slot, SlotLog } from "./types";
@@ -54,7 +54,13 @@ function hydrate(raw: unknown): AppState {
     ...seed,
     ...s,
     formula: { ...seed.formula, ...(s.formula ?? {}) },
-    days: s.days,
+    days: s.days.map((d) => ({
+      ...d,
+      slots: d.slots.map((slot) => ({
+        ...slot,
+        targets: slot.targets ?? targetsForRole(slot.role),
+      })),
+    })),
     logs: Array.isArray(s.logs) ? s.logs : [],
   };
 }
