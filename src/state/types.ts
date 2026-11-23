@@ -110,13 +110,49 @@ export interface AppState {
   createdAt: number;
 }
 
-export const RATINGS = [
-  { key: "2-", label: "2-", short: "Too easy", long: "No soreness, no pump at all." },
-  { key: "2-1", label: "2-1", short: "Easy", long: "No soreness, but I felt a pump." },
-  { key: "1-0", label: "1-0", short: "Right", long: "Just healed, good pump, plenty of work." },
-  { key: "1-1", label: "1-1", short: "Hard", long: "Still notably sore, a lot of work." },
-  { key: "1-2", label: "1-2", short: "Too hard", long: "Very sore, everything it took." },
+/**
+ * Recovery check-in. Written the way the sheet writes it: the higher the number,
+ * the more recovered you were, so 2 means "add work" and -2 means "back off".
+ */
+export const SORENESS = [
+  {
+    value: 2,
+    label: "2",
+    short: "No pump",
+    long: "Wasn't sore at all in the muscles I trained today, and got almost no pump whatsoever.",
+  },
+  {
+    value: 1,
+    label: "1",
+    short: "Pumped",
+    long: "Wasn't sore at all in the muscles I trained today, but I could definitely feel a pump.",
+  },
+  {
+    value: 0,
+    label: "0",
+    short: "Right",
+    long: "Either just barely healed or a tiny bit sore, got a good pump, and this was plenty of work.",
+  },
+  {
+    value: -1,
+    label: "-1",
+    short: "Sore",
+    long: "Still notably sore from last time, and it felt like a lot of work to complete the sets.",
+  },
+  {
+    value: -2,
+    label: "-2",
+    short: "Very sore",
+    long: "Still very sore from last time, and it felt like overkill to complete the sets today.",
+  },
 ] as const;
+
+/** Sets added or removed for a check-in value. 1 is the default and changes nothing. */
+export const SORENESS_SET_DELTA: Record<number, number> = { 2: 1, 1: 0, 0: 0, "-1": -1, "-2": -2 };
+
+export function sorenessEntry(value: number) {
+  return SORENESS.find((s) => s.value === value) ?? SORENESS[1];
+}
 
 export const EQUIP_LABEL: Record<Equip, string> = {
   ft: "Functional trainer",

@@ -30,7 +30,7 @@ interface Store {
   logSet: (input: SetInput) => void;
   undoSet: (dayId: string, slotId: string, rung: number) => void;
   clearSlot: (dayId: string, slotId: string, rung: number) => void;
-  rate: (dayId: string, slotId: string, rung: number, rating: number) => void;
+  setSoreness: (dayId: string, slotId: string, rung: number, value: number) => void;
   setRung: (rung: number) => void;
   setDay: (dayId: string) => void;
   nextDay: () => void;
@@ -71,7 +71,13 @@ function hydrate(raw: unknown): AppState {
         baseWeight: legacy ? startingWeight(slot.rm10, seed.formula.roundTo) : slot.baseWeight,
       })),
     })),
-    logs: Array.isArray(s.logs) ? s.logs : [],
+    logs: Array.isArray(s.logs)
+      ? s.logs.map((l) => ({
+          ...l,
+          // old logs stored an index into the chip list; 2 - index is the same scale
+          rating: l.rating == null ? undefined : l.rating >= 0 && l.rating <= 4 && ![-2, -1, 0, 1, 2].includes(l.rating) ? 2 - l.rating : l.rating,
+        }))
+      : [],
   };
 }
 
@@ -139,6 +145,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       logSet: ({ dayId, slotId, rung, weight, reps }) => {
         upsert(dayId, slotId, rung, (log) => ({
           ...log,
+          rating: log.rating ?? 1,
           sets: [...log.sets, { weight, reps, at: Date.now() }],
         }));
       },
@@ -159,8 +166,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ),
         }));
       },
-      rate: (dayId, slotId, rung, rating) => {
-        upsert(dayId, slotId, rung, (log) => ({ ...log, rating }));
+      setSoreness: (dayId, slotId, rung, value) => {
+        upsert(dayId, slotId, rung, (log) => ({ ...log, rating: value }));
       },
       setRung: (rung) =>
         setState((p) => ({ ...p, rung: Math.min(Math.max(1, rung), p.totalRungs) })),

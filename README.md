@@ -6,7 +6,9 @@ Installable on iPhone, works offline, stores everything in the browser's local d
 ## What is in here
 
 - **Today** - the current day at the current rung. Two sliders scrub the six rungs and the six
-  days, so you can start wherever you are in the loop. Weights come from the formula, not from a table.
+  days, so you can start wherever you are in the loop.
+- Each lift carries a soreness check-in (2 to -2, default 1) that trims or adds sets for that
+  session only; the weight ladder never moves. Weights come from the formula, not from a table.
   Log a set and the rest timer starts, with audio ticks and a chime. Rate the lift on the sheet's
   five-point scale after the first set.
 - **Plan** - all six days. Tap a lift to swap it from the exercise bank (functional trainer and
@@ -38,6 +40,19 @@ per lift because isolation work stops climbing at 3 sets while the big barbell l
 The sheet's weeks are called **rungs** here on purpose: a rung is one pass through the same six
 days, so there is one loop instead of a calendar. Nothing in the UI talks about phases, blocks or
 cycles.
+
+## Soreness
+
+| Value | Meaning | Sets |
+|---|---|---|
+| 2 | Not sore, almost no pump | +1 |
+| 1 | Not sore, felt a pump (default) | same |
+| 0 | Barely healed, good pump, plenty of work | same |
+| -1 | Still notably sore, a lot of work | -1 |
+| -2 | Still very sore, overkill | -2 |
+
+The check-in is stored per date, lift and rung, so it resets to 1 on the next session and never
+rewrites past entries.
 
 ## Data
 

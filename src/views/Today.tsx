@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { ladderMath, repText, targetSets, targetWeight, todayKey } from "../state/formula";
+import { ladderMath, plannedSets, repText, targetSets, targetWeight, todayKey } from "../state/formula";
 import { exercise } from "../state/library";
 import { useStore } from "../state/store";
-import { RATINGS, type Day, type Slot } from "../state/types";
+import type { Day, Slot } from "../state/types";
 import * as sound from "../lib/audio";
 import { useRest } from "../ui/RestProvider";
 import { SlotSheet } from "../ui/SlotSheet";
+import { SorenessSlider } from "../ui/SorenessSlider";
 import { Timeline } from "../ui/Timeline";
 import { IconChevron } from "../ui/icons";
 
@@ -27,9 +28,10 @@ export function TodayView() {
     let total = 0;
     let done = 0;
     for (const slot of currentDay.slots) {
-      const target = targetSets(slot, state.rung, state.formula);
+      const log = logFor(currentDay.id, slot.id, state.rung);
+      const target = plannedSets(slot, state.rung, state.formula, log?.rating ?? 1);
       total += target;
-      done += Math.min(target, logFor(currentDay.id, slot.id, state.rung)?.sets.length ?? 0);
+      done += Math.min(target, log?.sets.length ?? 0);
     }
     return { total, done };
   }, [currentDay, state.rung, state.formula, logFor]);
@@ -130,12 +132,14 @@ function ExerciseRow({
   onToggle: () => void;
   onEdit: () => void;
 }) {
-  const { state, logFor, logSet, undoSet, rate } = useStore();
+  const { state, logFor, logSet, undoSet, setSoreness } = useStore();
   const rest = useRest();
   const ex = exercise(slot.exerciseId);
-  const sets = targetSets(slot, rung, state.formula);
-  const weight = targetWeight(slot, rung, state.formula);
   const log = logFor(day.id, slot.id, rung);
+  const soreness = log?.rating ?? 1;
+  const baseSets = targetSets(slot, rung, state.formula);
+  const sets = plannedSets(slot, rung, state.formula, soreness);
+  const weight = targetWeight(slot, rung, state.formula);
   const logged = (log?.sets ?? []).slice(0, sets);
 
   const [w, setW] = useState(weight);
@@ -267,25 +271,12 @@ function ExerciseRow({
             </button>
           </div>
 
-          {logged.length > 0 && (
-            <div className="rate">
-              <p className="micro">Felt like</p>
-              <div className="ratings">
-                {RATINGS.map((r, i) => (
-                  <button
-                    key={r.key}
-                    className={log?.rating === i ? "rating is-on" : "rating"}
-                    onClick={() => rate(day.id, slot.id, rung, i)}
-                    aria-pressed={log?.rating === i}
-                    title={r.long}
-                  >
-                    {r.label}
-                    <small>{r.short}</small>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          <SorenessSlider
+            value={soreness}
+            baseSets={baseSets}
+            planned={sets}
+            onChange={(v) => setSoreness(day.id, slot.id, rung, v)}
+          />
         </div>
       )}
     </li>

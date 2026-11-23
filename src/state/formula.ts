@@ -1,4 +1,4 @@
-import type { Formula, Slot } from "./types";
+import { SORENESS_SET_DELTA, type Formula, type Slot } from "./types";
 
 export function stepFor(slot: Slot, f: Formula): number {
   return slot.incLb ?? f.stepLb;
@@ -37,6 +37,15 @@ export function ladderText(slot: Slot, f: Formula): string {
 
 export function targetSets(slot: Slot, rung: number, f: Formula): number {
   return Math.min(slot.baseSets + (rung - 1), slot.capSets, f.setsCap);
+}
+
+/**
+ * The sets you actually do: the formula's target plus whatever today's soreness
+ * check-in asks for. The check-in is per session (default 1), never below one set.
+ */
+export function plannedSets(slot: Slot, rung: number, f: Formula, soreness = 1): number {
+  const delta = SORENESS_SET_DELTA[soreness] ?? 0;
+  return Math.max(1, targetSets(slot, rung, f) + delta);
 }
 
 export function repText(slot: Slot): string {

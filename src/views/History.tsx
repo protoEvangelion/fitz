@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { exercise } from "../state/library";
 import { shortDate } from "../state/formula";
 import { useStore } from "../state/store";
-import { EQUIP_SHORT, RATINGS, type SlotLog } from "../state/types";
+import { EQUIP_SHORT, type SlotLog } from "../state/types";
 
 interface Group {
   dayId: string;
@@ -105,7 +105,9 @@ export function HistoryView() {
                       <div className="n">
                         {ex?.name ?? "Lift"}
                         {log.rating != null && (
-                          <span className="hist-rating">{RATINGS[log.rating].label}</span>
+                          <span className="hist-rating">
+                            {log.rating > 0 ? `+${log.rating}` : log.rating}
+                          </span>
                         )}
                       </div>
                       <div className="s">

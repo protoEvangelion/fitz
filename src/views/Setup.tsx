@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { targetSets, targetWeight, todayKey } from "../state/formula";
 import { useStore } from "../state/store";
-import { RATINGS } from "../state/types";
+import { SORENESS, SORENESS_SET_DELTA } from "../state/types";
 import * as sound from "../lib/audio";
 
 function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
@@ -202,27 +202,38 @@ export function SetupView() {
       </section>
 
       <section className="block">
-        <h2>The check-in scale</h2>
-        <p>Five taps, taken from column 5 of your sheet.</p>
+        <h2>The soreness check-in</h2>
+        <p>
+          One slider per lift, default 1. It trims or adds sets on that lift today; the weight
+          ladder never changes.
+        </p>
         <div style={{ marginTop: 10 }}>
-          {RATINGS.map((r) => (
-            <div
-              key={r.key}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "44px 1fr",
-                gap: 10,
-                padding: "9px 0",
-                borderTop: "1px solid var(--rule-soft)",
-                alignItems: "baseline",
-              }}
-            >
-              <span className="num" style={{ color: "var(--lime)", fontSize: 13 }}>
-                {r.label}
-              </span>
-              <span style={{ color: "var(--muted)", fontSize: 12.5 }}>{r.long}</span>
-            </div>
-          ))}
+          {SORENESS.map((s) => {
+            const delta = SORENESS_SET_DELTA[s.value] ?? 0;
+            return (
+              <div
+                key={s.value}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "44px 1fr auto",
+                  gap: 10,
+                  padding: "9px 0",
+                  borderTop: "1px solid var(--rule-soft)",
+                  alignItems: "baseline",
+                }}
+              >
+                <span className="num" style={{ color: "var(--lime)", fontSize: 13 }}>
+                  {s.value}
+                </span>
+                <span style={{ color: "var(--muted)", fontSize: 12.5 }}>{s.long}</span>
+                <span className="num" style={{ color: "var(--dim)", fontSize: 11.5 }}>
+                  {delta === 0
+                    ? "same"
+                    : `${delta > 0 ? "+" : ""}${delta} ${Math.abs(delta) === 1 ? "set" : "sets"}`}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </section>
 

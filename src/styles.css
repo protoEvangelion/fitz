@@ -263,7 +263,8 @@ button {
   padding-inline: 15px;
 }
 
-.timeline input[type="range"] {
+.timeline input[type="range"],
+.soreness input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -273,7 +274,8 @@ button {
   touch-action: pan-y;
 }
 
-.timeline input[type="range"]::-webkit-slider-runnable-track {
+.timeline input[type="range"]::-webkit-slider-runnable-track,
+.soreness input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(
@@ -283,7 +285,8 @@ button {
   );
 }
 
-.timeline input[type="range"]::-webkit-slider-thumb {
+.timeline input[type="range"]::-webkit-slider-thumb,
+.soreness input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 30px;
   height: 30px;
@@ -294,19 +297,22 @@ button {
   box-sizing: border-box;
 }
 
-.timeline input[type="range"]::-moz-range-track {
+.timeline input[type="range"]::-moz-range-track,
+.soreness input[type="range"]::-moz-range-track {
   height: 4px;
   border-radius: 2px;
   background: var(--rule);
 }
 
-.timeline input[type="range"]::-moz-range-progress {
+.timeline input[type="range"]::-moz-range-progress,
+.soreness input[type="range"]::-moz-range-progress {
   height: 4px;
   border-radius: 2px;
   background: var(--lime);
 }
 
-.timeline input[type="range"]::-moz-range-thumb {
+.timeline input[type="range"]::-moz-range-thumb,
+.soreness input[type="range"]::-moz-range-thumb {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -315,9 +321,40 @@ button {
   box-sizing: border-box;
 }
 
-.timeline input[type="range"]:focus-visible::-webkit-slider-thumb {
+.timeline input[type="range"]:focus-visible::-webkit-slider-thumb,
+.soreness input[type="range"]:focus-visible::-webkit-slider-thumb {
   outline: 2px solid var(--lime);
   outline-offset: 3px;
+}
+
+.soreness {
+  margin-top: 18px;
+}
+
+.soreness-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.soreness input[type="range"]::-webkit-slider-runnable-track {
+  background: var(--rule);
+}
+
+.soreness input[type="range"]::-moz-range-progress {
+  background: var(--rule);
+}
+
+.soreness-now {
+  font-size: 15px;
+  color: var(--lime);
+}
+
+.soreness-note {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--dim);
 }
 
 .timeline-scale {
