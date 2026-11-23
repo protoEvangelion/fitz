@@ -63,5 +63,15 @@ Stack: Vite, React, TypeScript, `vite-plugin-pwa`. No UI library, no state libra
 
 ## Install on iPhone
 
-Open the deployed URL in Safari, tap Share, then Add to Home Screen. It launches full screen,
-respects the safe areas, and runs offline.
+Must be Safari: Chrome and Firefox on iOS cannot install a web app.
+
+1. Open https://fitz-xi.vercel.app in Safari.
+2. Tap the Share button (square with the up arrow) in the toolbar.
+3. Scroll the share sheet and tap Add to Home Screen.
+4. Name it Fitz, tap Add, then open it from the home screen.
+
+It launches full screen with a dark launch image, respects the safe areas, and works with no signal
+after the first load. Chrome or Edge on a computer can install the same way from the address bar.
+
+Deleting the icon can clear this app's website data, so export a backup from Setup before you remove
+it.

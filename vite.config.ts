@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png"],
+      includeAssets: ["icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png", "splash/*.png"],
       manifest: {
         name: "Fitz",
         short_name: "Fitz",
@@ -33,6 +33,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,png,svg,webmanifest}"],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: "/index.html",
         runtimeCaching: [
           {

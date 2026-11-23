@@ -73,8 +73,10 @@ function shape(u, v) {
 
 function icon(size, { maskable = false } = {}) {
   const out = Buffer.alloc(size * size * 4);
-  const radius = maskable ? 0 : size * 0.225;
-  const scale = maskable ? 0.78 : 1; // keep the mark inside the safe zone
+  // Full bleed square: the platform applies its own squircle mask. A pre-rounded
+  // PNG gets masked twice and reads as a smaller tile with dark corners.
+  const radius = 0;
+  const scale = maskable ? 0.86 : 1; // maskable stays inside the 80% safe circle
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       let bgHits = 0;
@@ -104,7 +106,36 @@ function icon(size, { maskable = false } = {}) {
   return png(size, size, out);
 }
 
+/** Launch screen: flat field, mark above centre. No text, no gradient. */
+function splash(w, h) {
+  const out = Buffer.alloc(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      out[i] = BG[0];
+      out[i + 1] = BG[1];
+      out[i + 2] = BG[2];
+      out[i + 3] = 255;
+    }
+  }
+  const s = Math.round(Math.min(w, h) * 0.22);
+  const ox = Math.round((w - s) / 2);
+  const oy = Math.round((h - s) / 2 - h * 0.03);
+  for (let y = 0; y < s; y++) {
+    for (let x = 0; x < s; x++) {
+      if (!shape(x / s, y / s)) continue;
+      const i = ((oy + y) * w + (ox + x)) * 4;
+      out[i] = LIME[0];
+      out[i + 1] = LIME[1];
+      out[i + 2] = LIME[2];
+      out[i + 3] = 255;
+    }
+  }
+  return png(w, h, out);
+}
+
 mkdirSync(new URL("../public/icons", import.meta.url), { recursive: true });
+mkdirSync(new URL("../public/splash", import.meta.url), { recursive: true });
 const write = (name, buf) =>
   writeFileSync(new URL(`../public/icons/${name}`, import.meta.url), buf);
 
@@ -113,6 +144,21 @@ write("icon-192.png", icon(192));
 write("icon-512.png", icon(512));
 write("icon-maskable-512.png", icon(512, { maskable: true }));
 write("favicon-64.png", icon(64));
+
+for (const [w, h] of [
+  [1320, 2868],
+  [1290, 2796],
+  [1284, 2778],
+  [1242, 2688],
+  [1206, 2622],
+  [1179, 2556],
+  [1170, 2532],
+  [1125, 2436],
+  [828, 1792],
+  [750, 1334],
+]) {
+  writeFileSync(new URL(`../public/splash/${w}x${h}.png`, import.meta.url), splash(w, h));
+}
 
 writeFileSync(
   new URL("../public/icons/mask.svg", import.meta.url),
