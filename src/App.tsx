@@ -5,8 +5,7 @@ import { TodayView } from "./views/Today";
 import { PlanView } from "./views/Plan";
 import { HistoryView } from "./views/History";
 import { SetupView } from "./views/Setup";
-import { IconChevron, IconLog, IconPlan, IconSetup, IconToday } from "./ui/icons";
-import { JumpSheet } from "./ui/JumpSheet";
+import { IconLog, IconPlan, IconSetup, IconToday } from "./ui/icons";
 
 type Tab = "today" | "plan" | "log" | "setup";
 
@@ -32,9 +31,8 @@ function tabFromHash(): Tab {
 }
 
 function Shell() {
-  const { state, setDay } = useStore();
+  const { setDay } = useStore();
   const [tab, setTab] = useState<Tab>(tabFromHash);
-  const [rungs, setRungs] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -49,15 +47,6 @@ function Shell() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
-
-  const rungControl = (
-    <button className="rung-pill" onClick={() => setRungs(true)} title="Change rung">
-      <span className="micro">Rung</span>
-      <b>{state.rung}</b>
-      <span className="of">/{state.totalRungs}</span>
-      <IconChevron width={13} height={13} style={{ marginLeft: 2, color: "var(--dim)" }} />
-    </button>
-  );
 
   return (
     <div className="app">
@@ -76,12 +65,10 @@ function Shell() {
             </button>
           ))}
         </nav>
-        <div className="rail-foot">{rungControl}</div>
       </aside>
 
       <header className="topbar">
         <span className="mark">Fitz</span>
-        {rungControl}
       </header>
 
       {tab === "today" && <TodayView />}
@@ -95,8 +82,6 @@ function Shell() {
       )}
       {tab === "log" && <HistoryView />}
       {tab === "setup" && <SetupView />}
-
-      {rungs && <JumpSheet onClose={() => setRungs(false)} />}
 
       <RestBar />
 

@@ -6,7 +6,7 @@ import { RATINGS, type Day, type Slot } from "../state/types";
 import * as sound from "../lib/audio";
 import { useRest } from "../ui/RestProvider";
 import { SlotSheet } from "../ui/SlotSheet";
-import { JumpSheet } from "../ui/JumpSheet";
+import { Timeline } from "../ui/Timeline";
 import { IconChevron } from "../ui/icons";
 
 function dateLine(key: string): string {
@@ -19,10 +19,9 @@ function dateLine(key: string): string {
 }
 
 export function TodayView() {
-  const { state, currentDay, setDay, nextDay, logFor } = useStore();
+  const { state, currentDay, setDay, setRung, nextDay, logFor } = useStore();
   const [open, setOpen] = useState<string | null>(null);
   const [editing, setEditing] = useState<Slot | null>(null);
-  const [jumping, setJumping] = useState(false);
 
   const stats = useMemo(() => {
     let total = 0;
@@ -35,11 +34,6 @@ export function TodayView() {
     return { total, done };
   }, [currentDay, state.rung, state.formula, logFor]);
 
-  const dayDone = (d: Day) =>
-    d.slots.every(
-      (s) => (logFor(d.id, s.id, state.rung)?.sets.length ?? 0) >= targetSets(s, state.rung, state.formula),
-    );
-
   const next = state.days[(state.days.findIndex((d) => d.id === currentDay.id) + 1) % state.days.length];
 
   return (
@@ -47,25 +41,35 @@ export function TodayView() {
       <main className="page">
         <section className="lede">
           <h1 className="day-title">{currentDay.title}</h1>
-          <button className="day-sub day-jump" onClick={() => setJumping(true)}>
-            Day {currentDay.n} of 6 · {dateLine(todayKey())} · {stats.done} of {stats.total} sets done
-            <IconChevron width={14} height={14} aria-hidden />
-          </button>
-        </section>
+          <p className="day-sub">
+            {dateLine(todayKey())} · {stats.done} of {stats.total} sets done
+          </p>
 
-        <nav className="day-tabs" aria-label="Days">
-          {state.days.map((d) => (
-            <button
-              key={d.id}
-              className={`daytab${d.id === currentDay.id ? " is-on" : ""}${dayDone(d) ? " is-done" : ""}`}
-              onClick={() => setDay(d.id)}
-              aria-current={d.id === currentDay.id}
-            >
-              0{d.n}
-              <span className="dot" />
-            </button>
-          ))}
-        </nav>
+          <div className="timelines">
+            <Timeline
+              label="Rung"
+              value={state.rung}
+              total={state.totalRungs}
+              onChange={setRung}
+              onSnap={() => {
+                sound.unlock();
+                if (state.sound) sound.snap();
+                if (state.haptics) sound.buzz(8);
+              }}
+            />
+            <Timeline
+              label="Day"
+              value={currentDay.n}
+              total={state.days.length}
+              onChange={(n) => setDay(`d${n}`)}
+              onSnap={() => {
+                sound.unlock();
+                if (state.sound) sound.snap();
+                if (state.haptics) sound.buzz(8);
+              }}
+            />
+          </div>
+        </section>
 
         <ul className="list">
           {currentDay.slots.map((slot, i) => (
@@ -105,7 +109,6 @@ export function TodayView() {
         <SlotSheet dayId={currentDay.id} slot={editing} onClose={() => setEditing(null)} />
       )}
 
-      {jumping && <JumpSheet onClose={() => setJumping(false)} />}
     </>
   );
 }

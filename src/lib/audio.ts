@@ -43,6 +43,11 @@ export function restTick(): void {
   tone(1046, 0.05, 0, 0.07, "square");
 }
 
+export function snap(): void {
+  if (!ctx) return;
+  tone(720, 0.035, 0, 0.04, "triangle");
+}
+
 export function restDone(): void {
   if (!ctx) return;
   tone(523, 0.14, 0, 0.12);

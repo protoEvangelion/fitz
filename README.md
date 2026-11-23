@@ -5,8 +5,8 @@ Installable on iPhone, works offline, stores everything in the browser's local d
 
 ## What is in here
 
-- **Today** - the current day at the current rung. Tap the day line, or the rung pill, to start on
-  any day and any rung. Weights come from the formula, not from a table.
+- **Today** - the current day at the current rung. Two sliders scrub the six rungs and the six
+  days, so you can start wherever you are in the loop. Weights come from the formula, not from a table.
   Log a set and the rest timer starts, with audio ticks and a chime. Rate the lift on the sheet's
   five-point scale after the first set.
 - **Plan** - all six days. Tap a lift to swap it from the exercise bank (functional trainer and

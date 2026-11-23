@@ -185,34 +185,6 @@ button {
   background: var(--lime);
 }
 
-.rung-pill {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-  min-height: 34px;
-  padding: 6px 12px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  color: var(--ink-2);
-  background: var(--panel);
-}
-
-.rung-pill b {
-  font-family: var(--mono);
-  font-size: 15px;
-  color: var(--lime);
-}
-
-.rung-pill .of {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--dim);
-}
-
-.rung-pill .micro {
-  margin-right: 2px;
-}
-
 /* ---------- page shell ---------- */
 
 .page {
@@ -244,79 +216,127 @@ button {
   max-width: 40ch;
 }
 
-.day-jump {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 0 0 3px;
-  border-bottom: 1px solid var(--rule);
-  text-align: left;
-  line-height: 1.4;
+/* ---------- timelines ---------- */
+
+.timelines {
+  display: grid;
+  gap: 2px;
+  margin-top: 18px;
+  padding-inline: 18px;
+  border-top: 1px solid var(--rule-soft);
 }
 
-.day-jump svg {
-  color: var(--dim);
-  flex: 0 0 auto;
+.timeline {
+  padding: 12px 0 4px;
 }
 
-.day-jump:hover {
-  color: var(--ink);
-  border-bottom-color: var(--ink-2);
+.timeline + .timeline {
+  border-top: 1px solid var(--rule-soft);
 }
 
-/* ---------- day tabs ---------- */
-
-.day-tabs {
+.timeline-head {
   display: flex;
-  gap: 6px;
-  padding: 0 18px 18px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.day-tabs::-webkit-scrollbar {
-  display: none;
+.timeline-now {
+  font-size: 15px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
-.daytab {
-  flex: 1 0 auto;
-  min-width: 40px;
-  height: 36px;
-  padding: 0 6px;
-  border-bottom: 1px solid var(--rule-soft);
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--dim);
-  background: transparent;
-  transition: color 150ms ease, border-color 150ms ease;
-}
-
-.daytab .dot {
-  display: block;
-  width: 3px;
-  height: 3px;
-  margin: 4px auto 0;
-  background: currentColor;
-  opacity: 0;
-}
-
-.daytab.is-on {
+.timeline-now b {
   color: var(--lime);
-  border-bottom-color: var(--lime);
+  font-weight: 600;
 }
 
-.daytab.is-on .dot {
-  opacity: 1;
+.timeline-now span {
+  color: var(--dim);
+  font-size: 11px;
+}
+
+.timeline-wrap {
+  display: flex;
+  align-items: center;
+  padding-inline: 15px;
+}
+
+.timeline input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 38px;
+  margin: 0;
+  background: transparent;
+  touch-action: pan-y;
+}
+
+.timeline input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--lime) 0 var(--pct, 0%),
+    var(--rule) var(--pct, 0%) 100%
+  );
+}
+
+.timeline input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  margin-top: -13px;
+  border-radius: 50%;
+  background: var(--lime);
+  border: 3px solid var(--bg);
+  box-sizing: border-box;
+}
+
+.timeline input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--rule);
+}
+
+.timeline input[type="range"]::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
   background: var(--lime);
 }
 
-.daytab.is-done {
-  color: var(--ink-2);
+.timeline input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--lime);
+  border: 3px solid var(--bg);
+  box-sizing: border-box;
 }
 
-.daytab.is-done .dot {
-  opacity: 1;
-  background: var(--dim);
+.timeline input[type="range"]:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.timeline-scale {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 9px;
+}
+
+.timeline-scale span {
+  width: 12px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+}
+
+.timeline-scale span.is-on {
+  color: var(--lime);
+  font-weight: 600;
 }
 
 /* ---------- exercise rows ---------- */
@@ -1084,64 +1104,6 @@ button {
   padding: 0 0 12px;
 }
 
-.jumpday {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 9px 0;
-  border-top: 1px solid var(--rule-soft);
-  text-align: left;
-}
-
-.jumpday .d {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--dim);
-}
-
-.jumpday .n {
-  font-size: 14.5px;
-  color: var(--ink);
-}
-
-.jumpday .c {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--dim);
-}
-
-.jumpday.is-on .d,
-.jumpday.is-on .n {
-  color: var(--lime);
-}
-
-.rungchips {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-}
-
-.rungchip {
-  height: 46px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  font-family: var(--mono);
-  font-size: 15px;
-  color: var(--muted);
-}
-
-.rungchip.is-on {
-  background: var(--lime);
-  border-color: var(--lime);
-  color: var(--lime-ink);
-  font-weight: 700;
-}
-
 .search {
   display: flex;
   align-items: center;
@@ -1607,14 +1569,8 @@ button {
     max-width: 52ch;
   }
 
-  .day-tabs {
-    padding: 0 clamp(24px, 3.2vw, 40px) 20px;
-    gap: 8px;
-  }
-
-  .daytab {
-    height: 42px;
-    font-size: 13px;
+  .timelines {
+    padding-inline: clamp(24px, 3.2vw, 40px);
   }
 
   .list {
@@ -1869,18 +1825,6 @@ button {
     color: var(--lime);
   }
 
-  .rail-foot {
-    margin-top: auto;
-    display: grid;
-    gap: 10px;
-  }
-
-  .rail .rung-pill {
-    width: 100%;
-    justify-content: space-between;
-    padding-inline: 14px;
-  }
-
   main.page {
     grid-column: 2;
     width: 100%;
@@ -1942,14 +1886,8 @@ button {
     font-size: 16px;
   }
 
-  .day-tabs {
-    padding: 0 clamp(32px, 3vw, 56px) 24px;
-    gap: 10px;
-  }
-
-  .daytab {
-    height: 46px;
-    font-size: 13.5px;
+  .timelines {
+    padding-inline: clamp(32px, 3vw, 56px);
   }
 
   .row-head {
