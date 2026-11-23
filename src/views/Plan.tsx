@@ -48,6 +48,7 @@ export function PlanView({ goToday }: { goToday: (dayId: string) => void }) {
             {open && (
               <>
                 <p className="plan-focus">{day.focus}</p>
+                <div className="slotlist">
                 {day.slots.map((slot) => {
                   const ex = exercise(slot.exerciseId);
                   return (
@@ -76,7 +77,8 @@ export function PlanView({ goToday }: { goToday: (dayId: string) => void }) {
                     </div>
                   );
                 })}
-                <div style={{ padding: "12px 18px 16px", borderTop: "1px solid var(--rule-soft)" }}>
+                </div>
+                <div className="plan-cta">
                   <button className="btn btn-block" onClick={() => goToday(day.id)}>
                     Train day {day.n}
                   </button>
@@ -89,7 +91,7 @@ export function PlanView({ goToday }: { goToday: (dayId: string) => void }) {
       })}
 
       <p className="footnote">
-        Figures are for rung {state.rung}. Pick a different rung from the pill at the top.
+        Figures are for rung {state.rung}. Tap the day line on Today to start anywhere.
       </p>
 
       {editing && <SlotSheet dayId={editing.dayId} slot={editing.slot} onClose={() => setEditing(null)} />}

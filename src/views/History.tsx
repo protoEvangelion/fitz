@@ -49,7 +49,7 @@ export function HistoryView() {
       <main className="page">
         <section className="lede">
           <h1 className="day-title">Nothing logged yet</h1>
-          <p className="day-sub">Sets you tick off on the Today screen land here, on this phone only.</p>
+          <p className="day-sub">Sets you tick off on the Today screen land here, on this device only.</p>
         </section>
         <div className="empty">
           <div className="mark-line" />

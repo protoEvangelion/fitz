@@ -6,7 +6,7 @@ import { PlanView } from "./views/Plan";
 import { HistoryView } from "./views/History";
 import { SetupView } from "./views/Setup";
 import { IconChevron, IconLog, IconPlan, IconSetup, IconToday } from "./ui/icons";
-import { RungSheet } from "./ui/RungSheet";
+import { JumpSheet } from "./ui/JumpSheet";
 
 type Tab = "today" | "plan" | "log" | "setup";
 
@@ -50,16 +50,38 @@ function Shell() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  const rungControl = (
+    <button className="rung-pill" onClick={() => setRungs(true)} title="Change rung">
+      <span className="micro">Rung</span>
+      <b>{state.rung}</b>
+      <span className="of">/{state.totalRungs}</span>
+      <IconChevron width={13} height={13} style={{ marginLeft: 2, color: "var(--dim)" }} />
+    </button>
+  );
+
   return (
     <div className="app">
+      <aside className="rail">
+        <span className="mark rail-mark">Fitz</span>
+        <nav className="rail-nav" aria-label="Sections">
+          {TABS.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              className={tab === id ? "railtab is-on" : "railtab"}
+              onClick={() => setTab(id)}
+              aria-current={tab === id ? "page" : undefined}
+            >
+              <Icon />
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="rail-foot">{rungControl}</div>
+      </aside>
+
       <header className="topbar">
         <span className="mark">Fitz</span>
-        <button className="rung-pill" onClick={() => setRungs(true)} title="Change rung">
-          <span className="micro">Rung</span>
-          <b>{state.rung}</b>
-          <span className="of">/{state.totalRungs}</span>
-          <IconChevron width={13} height={13} style={{ marginLeft: 2, color: "var(--dim)" }} />
-        </button>
+        {rungControl}
       </header>
 
       {tab === "today" && <TodayView />}
@@ -74,7 +96,7 @@ function Shell() {
       {tab === "log" && <HistoryView />}
       {tab === "setup" && <SetupView />}
 
-      {rungs && <RungSheet onClose={() => setRungs(false)} />}
+      {rungs && <JumpSheet onClose={() => setRungs(false)} />}
 
       <RestBar />
 

@@ -5,7 +5,8 @@ Installable on iPhone, works offline, stores everything in the browser's local d
 
 ## What is in here
 
-- **Today** - the current day at the current rung. Weights come from the formula, not from a table.
+- **Today** - the current day at the current rung. Tap the day line, or the rung pill, to start on
+  any day and any rung. Weights come from the formula, not from a table.
   Log a set and the rest timer starts, with audio ticks and a chime. Rate the lift on the sheet's
   five-point scale after the first set.
 - **Plan** - all six days. Tap a lift to swap it from the exercise bank (functional trainer and
@@ -61,7 +62,7 @@ npm run icons    # regenerate public/icons/*.png from the dumbbell mark
 
 Stack: Vite, React, TypeScript, `vite-plugin-pwa`. No UI library, no state library, no backend.
 
-## Install on iPhone
+## Install on iPhone or iPad
 
 Must be Safari: Chrome and Firefox on iOS cannot install a web app.
 
@@ -71,7 +72,10 @@ Must be Safari: Chrome and Firefox on iOS cannot install a web app.
 4. Name it Fitz, tap Add, then open it from the home screen.
 
 It launches full screen with a dark launch image, respects the safe areas, and works with no signal
-after the first load. Chrome or Edge on a computer can install the same way from the address bar.
+after the first load.
+
+On iPad the layout adapts: portrait keeps the bottom tabs with a wider measure, plan lifts sit two
+up, and landscape turns the tabs into a left rail. Sheets become centred dialogs above 700px wide. Chrome or Edge on a computer can install the same way from the address bar.
 
 Deleting the icon can clear this app's website data, so export a backup from Setup before you remove
 it.

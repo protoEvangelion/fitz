@@ -6,6 +6,7 @@ import { RATINGS, type Day, type Slot } from "../state/types";
 import * as sound from "../lib/audio";
 import { useRest } from "../ui/RestProvider";
 import { SlotSheet } from "../ui/SlotSheet";
+import { JumpSheet } from "../ui/JumpSheet";
 import { IconChevron } from "../ui/icons";
 
 function dateLine(key: string): string {
@@ -21,6 +22,7 @@ export function TodayView() {
   const { state, currentDay, setDay, nextDay, logFor } = useStore();
   const [open, setOpen] = useState<string | null>(null);
   const [editing, setEditing] = useState<Slot | null>(null);
+  const [jumping, setJumping] = useState(false);
 
   const stats = useMemo(() => {
     let total = 0;
@@ -45,9 +47,10 @@ export function TodayView() {
       <main className="page">
         <section className="lede">
           <h1 className="day-title">{currentDay.title}</h1>
-          <p className="day-sub">
+          <button className="day-sub day-jump" onClick={() => setJumping(true)}>
             Day {currentDay.n} of 6 · {dateLine(todayKey())} · {stats.done} of {stats.total} sets done
-          </p>
+            <IconChevron width={14} height={14} aria-hidden />
+          </button>
         </section>
 
         <nav className="day-tabs" aria-label="Days">
@@ -101,6 +104,8 @@ export function TodayView() {
       {editing && (
         <SlotSheet dayId={currentDay.id} slot={editing} onClose={() => setEditing(null)} />
       )}
+
+      {jumping && <JumpSheet onClose={() => setJumping(false)} />}
     </>
   );
 }
@@ -161,15 +166,15 @@ function ExerciseRow({
             {slot.role}
           </span>
           <span className="row-name">{ex.name}</span>
-          <span className="row-target">
-            <span className="w">{sets}</span>
-            <span>{sets === 1 ? "set" : "sets"}</span>
-            <span className="sep">·</span>
-            <span className="w">{weight}</span>
-            <span>lb</span>
-            <span className="sep">·</span>
-            <span>{slot.repGoal} reps</span>
-          </span>
+        </span>
+        <span className="row-target">
+          <span className="w">{sets}</span>
+          <span>{sets === 1 ? "set" : "sets"}</span>
+          <span className="sep">·</span>
+          <span className="w">{weight}</span>
+          <span>lb</span>
+          <span className="sep">·</span>
+          <span>{slot.repGoal} reps</span>
         </span>
         <span className="row-right">
           {sets > 1 && (

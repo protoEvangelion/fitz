@@ -7,10 +7,12 @@ interface Props {
   children: ReactNode;
   flush?: boolean;
   action?: ReactNode;
+  /** Pinned below the scroll area, so the primary action never scrolls away. */
+  footer?: ReactNode;
 }
 
 /** Bottom sheet. Single layer, iOS-style grab handle, scroll body. */
-export function Sheet({ title, onClose, children, flush, action }: Props) {
+export function Sheet({ title, onClose, children, flush, action, footer }: Props) {
   const panel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,6 +59,7 @@ export function Sheet({ title, onClose, children, flush, action }: Props) {
           </div>
         </div>
         <div className={flush ? "sheet-body flush" : "sheet-body"}>{children}</div>
+        {footer && <div className="sheet-foot">{footer}</div>}
       </div>
     </>
   );

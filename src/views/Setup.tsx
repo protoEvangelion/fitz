@@ -192,7 +192,7 @@ export function SetupView() {
       </section>
 
       <section className="block">
-        <h2>On this phone</h2>
+        <h2>On this device</h2>
         <p>
           {standalone
             ? "Running from the home screen. Everything works offline."
