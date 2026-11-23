@@ -132,7 +132,7 @@ export function seedState(): AppState {
     restSec: 120,
     sound: true,
     haptics: true,
-    formula: { mode: "compound", rate: 1.1, stepLb: 5, roundTo: 5, setsCap: 5 },
+    formula: { mode: "percent", pct: 0.02, stepLb: 5, roundTo: 5, setsCap: 5 },
     days: buildDays(),
     logs: [],
     createdAt: Date.now(),

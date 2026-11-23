@@ -52,11 +52,17 @@ function hydrate(raw: unknown): AppState {
   if (!Array.isArray(s.days) || s.days.length !== 6) return seed;
   // Older local state used the flat +lb ladder and hand-seeded rung 1 weights.
   // Move it once onto the sheet's own rule: 85% of 10RM, then x1.1 per rung.
-  const legacy = !s.formula?.mode;
+  const stored = s.formula as { mode?: string } | undefined;
+  const legacy = !stored?.mode || stored.mode === "compound";
+  const formula = { ...seed.formula, ...(s.formula ?? {}) } as typeof seed.formula;
+  if (legacy) {
+    formula.mode = "percent";
+    formula.pct = 0.02;
+  }
   return {
     ...seed,
     ...s,
-    formula: { ...seed.formula, ...(s.formula ?? {}) },
+    formula,
     days: s.days.map((d) => ({
       ...d,
       slots: d.slots.map((slot) => ({

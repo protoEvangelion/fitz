@@ -26,7 +26,7 @@ export function SetupView() {
   const nextSets = targetSets(example, 2, state.formula);
   const nextWeight = targetWeight(example, 2, state.formula);
   const thirdWeight = targetWeight(example, 3, state.formula);
-  const compound = state.formula.mode === "compound";
+  const percent = state.formula.mode === "percent";
 
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const standalone =
@@ -54,8 +54,8 @@ export function SetupView() {
       <section className="lede" style={{ paddingBottom: 14 }}>
         <h1 className="day-title">How the numbers move</h1>
         <p className="day-sub">
-          Rung 1 is 85% of your 10RM, the rule on your sheet. Every rung above compounds 10% and adds
-          a set, so changing one 10RM moves the whole ladder.
+          Rung 1 is 85% of your 10RM. Every rung above adds a set and 2% of that base weight, so
+          rung 6 lands at 1.10x - changing one 10RM moves the whole ladder.
         </p>
       </section>
 
@@ -64,8 +64,10 @@ export function SetupView() {
         <p>Three lines, no hidden cells. A rung is one pass through the same six days.</p>
         <div className="note">
           <code>base = MROUND(10RM x 0.85, 5)</code>
-          {compound ? (
-            <code>weight = MROUND(previous x {state.formula.rate}, 5)</code>
+          {percent ? (
+            <code>
+              weight = MROUND(base x (1 + {state.formula.pct} x (rung - 1)), {state.formula.roundTo})
+            </code>
           ) : (
             <code>weight = base + {state.formula.stepLb} x (rung - 1)</code>
           )}
@@ -80,25 +82,25 @@ export function SetupView() {
             <label>Progression</label>
             <div className="segmented">
               <button
-                className={compound && state.formula.rate === 1.1 ? "is-on" : ""}
-                onClick={() => setFormula({ mode: "compound", rate: 1.1 })}
+                className={percent && state.formula.pct === 0.02 ? "is-on" : ""}
+                onClick={() => setFormula({ mode: "percent", pct: 0.02 })}
               >
-                x1.1
+                +2%
               </button>
               <button
-                className={compound && state.formula.rate === 1.05 ? "is-on" : ""}
-                onClick={() => setFormula({ mode: "compound", rate: 1.05 })}
+                className={percent && state.formula.pct === 0.05 ? "is-on" : ""}
+                onClick={() => setFormula({ mode: "percent", pct: 0.05 })}
               >
-                x1.05
+                +5%
               </button>
-              <button className={!compound ? "is-on" : ""} onClick={() => setFormula({ mode: "step" })}>
+              <button className={!percent ? "is-on" : ""} onClick={() => setFormula({ mode: "step" })}>
                 + lb
               </button>
             </div>
           </div>
         </div>
 
-        {!compound && (
+        {!percent && (
           <div className="field">
             <div className="row2">
               <label>Pounds per rung</label>

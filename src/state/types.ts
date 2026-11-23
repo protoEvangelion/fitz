@@ -85,11 +85,12 @@ export interface SlotLog {
 
 export interface Formula {
   /**
-   * compound: weight(rung) = MROUND(weight(rung-1) x rate, roundTo), starting at 85% of 10RM.
-   * step:     weight(rung) = baseWeight + stepLb x (rung - 1), rounded.
+   * percent: weight(rung) = MROUND(base x (1 + pct x (rung - 1)), roundTo)
+   *          base is 85% of the 10RM, so rung 6 sits at +10% of the base.
+   * step:    weight(rung) = MROUND(base + stepLb x (rung - 1), roundTo)
    */
-  mode: "compound" | "step";
-  rate: number;
+  mode: "percent" | "step";
+  pct: number;
   stepLb: number;
   roundTo: number;
   setsCap: number;

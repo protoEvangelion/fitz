@@ -22,16 +22,16 @@ Installable on iPhone, works offline, stores everything in the browser's local d
 This is the sheet's own chain, reproduced:
 
 ```
-base        = MROUND(10RM * 0.85, 5)        rung 1
-weight(r)   = MROUND(weight(r-1) * 1.1, 5)  10% compounded, rounded each step
-sets(r)     = base sets + (r - 1)           capped by the lift and the set ceiling
+base        = MROUND(10RM * 0.85, 5)                 rung 1
+weight(r)   = MROUND(base * (1 + 0.02 * (r - 1)), 5)  +2% of the base per rung
+sets(r)     = base sets + (r - 1)                    capped by the lift and the set ceiling
 ```
 
-So a 145 lb 10RM runs 125 / 140 / 155 / 170 / 185 / 205. Weight rounds at every step, exactly like
-`MROUND(J13*1.1,5)` in the sheet, which is why the chain is 105 > 115 > 125 rather than a single
-multiplication. `+ lb per rung` is still available in Setup for lifts where 10% is too much, and
-`base`/`base sets` stay editable per lift. Set ceilings are per lift because isolation work stops
-climbing at 3 sets while the big barbell lifts go to 4-5.
+The multiplier is applied to rung 1 every time, never to the previous rung: 1.02, 1.04, 1.06, 1.08,
+1.10. So a 145 lb 10RM runs 125 / 130 / 130 / 135 / 135 / 140, which reproduces the sheet's own
+week 2 column on 27 of 30 lifts (the other three are hand-entered jumps in the sheet). `+ lb per
+rung` is still available in Setup, and `base`/`base sets` stay editable per lift. Set ceilings are
+per lift because isolation work stops climbing at 3 sets while the big barbell lifts go to 4-5.
 
 ## Words
 
