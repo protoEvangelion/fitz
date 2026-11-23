@@ -62,10 +62,10 @@ export function SetupView() {
         <p>Two lines, no hidden cells. A rung is one pass through the same six days.</p>
         <div className="note">
           <code>weight = base + step x (rung - 1)</code>
-          <br />
           <code>sets = base sets + (rung - 1)</code>
-          <br />
-          <span style={{ color: "var(--dim)" }}>both rounded and capped by the lift</span>
+          <span style={{ display: "block", marginTop: 8, color: "var(--dim)", fontSize: 12 }}>
+            both rounded and capped by the lift
+          </span>
         </div>
 
         <div className="field">
@@ -120,8 +120,9 @@ export function SetupView() {
         </div>
 
         <p className="footnote" style={{ padding: "14px 0 0" }}>
-          Example with your numbers: {example.baseWeight} lb base on the {example.role.toLowerCase()}{" "}
-          becomes <span className="num">{exampleWeight} lb x {exampleSets}</span> on rung {state.rung}.
+          With your numbers: {example.baseWeight} lb for one set on rung 1, then{" "}
+          {exampleWeight} lb for {exampleSets} {exampleSets === 1 ? "set" : "sets"} on rung{" "}
+          {state.rung}.
         </p>
       </section>
 
