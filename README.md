@@ -35,8 +35,8 @@ week 2 column on 27 of 30 lifts (the other three are hand-entered jumps in the s
 rung` is still available in Setup, and `base`/`base sets` stay editable per lift.
 
 Sets climb one per rung with no early ceiling (cable fly: 1/2/3/4/5/6), and the rep goal is per
-rung: 3 RIR with the last set to failure for rungs 1-5, 1 RIR throughout on rung 6. Both are
-editable in Setup.
+rung: 3 RIR on rungs 1-2, 2 RIR on rungs 3-5, 1 RIR on rung 6, with the last set to failure through
+rung 5 and no failure set on rung 6. Both are editable in Setup.
 
 ## Words
 

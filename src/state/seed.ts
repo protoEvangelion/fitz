@@ -124,7 +124,7 @@ export function buildDays(): Day[] {
 export function seedState(): AppState {
   return {
     version: 1,
-    schema: 2,
+    schema: 3,
     rung: 1,
     totalRungs: 6,
     dayId: "d1",
@@ -138,13 +138,14 @@ export function seedState(): AppState {
       stepLb: 5,
       roundTo: 5,
       setsCap: 6,
-      // Rungs 1-5 keep the sheet's 3/fail; rung 6 is 1 RIR with no failure set.
+      // From the sheet: 3 RIR on weeks 1-2, 2 RIR on 3-5, 1 RIR on week 6.
+      // Last set to failure through rung 5, none on rung 6.
       goals: [
         { rir: 3, fail: true },
         { rir: 3, fail: true },
-        { rir: 3, fail: true },
-        { rir: 3, fail: true },
-        { rir: 3, fail: true },
+        { rir: 2, fail: true },
+        { rir: 2, fail: true },
+        { rir: 2, fail: true },
         { rir: 1, fail: false },
       ],
     },

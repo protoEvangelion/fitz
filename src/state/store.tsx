@@ -70,7 +70,11 @@ function hydrate(raw: unknown): AppState {
   if (storedSchema < 2) {
     formula.setsCap = Math.max(6, formula.setsCap);
   }
-  if (!Array.isArray(formula.goals) || formula.goals.length !== seed.formula.goals.length) {
+  if (
+    storedSchema < 3 ||
+    !Array.isArray(formula.goals) ||
+    formula.goals.length !== seed.formula.goals.length
+  ) {
     formula.goals = seed.formula.goals;
   }
   return {
