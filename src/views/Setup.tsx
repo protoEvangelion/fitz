@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { targetSets, targetWeight, todayKey } from "../state/formula";
+import { clock, targetSets, targetWeight, todayKey } from "../state/formula";
 import { useStore } from "../state/store";
 import { SORENESS, SORENESS_SET_DELTA } from "../state/types";
 import * as sound from "../lib/audio";
@@ -65,9 +65,10 @@ export function SetupView() {
         <div className="note">
           <code>base = MROUND(10RM x 0.85, 5)</code>
           {percent ? (
-            <code>
-              weight = MROUND(base x (1 + {state.formula.pct} x (rung - 1)), {state.formula.roundTo})
-            </code>
+            <>
+              <code>k = 1, 1.02, 1.04 ... 1.10 (by rung)</code>
+              <code>weight = MROUND(base x k, 5)</code>
+            </>
           ) : (
             <code>weight = base + {state.formula.stepLb} x (rung - 1)</code>
           )}
@@ -140,7 +141,7 @@ export function SetupView() {
           <div className="row2">
             <label>Set ceiling</label>
             <div className="segmented">
-              {[3, 4, 5].map((v) => (
+              {[4, 5, 6].map((v) => (
                 <button
                   key={v}
                   className={state.formula.setsCap === v ? "is-on" : ""}
@@ -153,6 +154,58 @@ export function SetupView() {
           </div>
         </div>
 
+        <div className="goals">
+          <p className="micro" style={{ margin: "18px 0 2px" }}>
+            Rep goal by rung
+          </p>
+          {state.formula.goals.map((g, i) => (
+            <div className="goalrow" key={i}>
+              <span className="num" style={{ color: "var(--dim)", fontSize: 11 }}>
+                R{i + 1}
+              </span>
+              <div className="segmented">
+                <button
+                  onClick={() =>
+                    setFormula({
+                      goals: state.formula.goals.map((x, j) =>
+                        j === i ? { ...x, rir: Math.max(0, x.rir - 1) } : x,
+                      ),
+                    })
+                  }
+                  aria-label={`Fewer RIR on rung ${i + 1}`}
+                >
+                  -
+                </button>
+                <span className="stepper-value num">{g.rir}</span>
+                <button
+                  onClick={() =>
+                    setFormula({
+                      goals: state.formula.goals.map((x, j) =>
+                        j === i ? { ...x, rir: Math.min(10, x.rir + 1) } : x,
+                      ),
+                    })
+                  }
+                  aria-label={`More RIR on rung ${i + 1}`}
+                >
+                  +
+                </button>
+              </div>
+              <button
+                className={g.fail ? "chip is-on" : "chip"}
+                onClick={() =>
+                  setFormula({
+                    goals: state.formula.goals.map((x, j) => (j === i ? { ...x, fail: !x.fail } : x)),
+                  })
+                }
+                aria-pressed={g.fail}
+                aria-label={`Last set to failure on rung ${i + 1}`}
+              >
+                {g.fail ? "to failure" : "no failure"}
+              </button>
+            </div>
+          ))}
+        </div>
+
         <p className="footnote" style={{ padding: "14px 0 0" }}>
           With your numbers: {example.rm10} 10RM gives {example.baseWeight} lb on rung 1,{" "}
           {nextWeight} on rung 2 ({nextSets} sets), {thirdWeight} on rung 3. The set ceiling stops it
@@ -162,37 +215,79 @@ export function SetupView() {
 
       <section className="block">
         <h2>Rest and cues</h2>
-        <p>Starts when you log a set, chimes when it runs out.</p>
+        <p>Starts when you log a set. The end cue is yours to pick.</p>
+
         <div className="field">
           <div className="row2">
             <label>Default rest</label>
             <div className="segmented">
-              {[60, 90, 120, 180].map((v) => (
+              <button
+                onClick={() => setPref({ restSec: Math.max(15, state.restSec - 15) })}
+                aria-label="15 seconds less rest"
+              >
+                -
+              </button>
+              <span className="stepper-value num" style={{ minWidth: 58 }}>
+                {clock(state.restSec)}
+              </span>
+              <button
+                onClick={() => setPref({ restSec: Math.min(900, state.restSec + 15) })}
+                aria-label="15 seconds more rest"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="presets">
+          {[60, 120, 180, 240].map((v) => (
+            <button
+              key={v}
+              className={state.restSec === v ? "chip is-on" : "chip"}
+              onClick={() => setPref({ restSec: v })}
+            >
+              {clock(v)}
+            </button>
+          ))}
+        </div>
+
+        <div className="field">
+          <div className="row2">
+            <label>End of rest</label>
+            <div className="segmented">
+              {(["off", "beep", "chime"] as const).map((v) => (
                 <button
                   key={v}
-                  className={state.restSec === v ? "is-on" : ""}
-                  onClick={() => setPref({ restSec: v })}
+                  className={state.sound === v ? "is-on" : ""}
+                  onClick={() => {
+                    sound.unlock();
+                    if (v === "beep") sound.restBeep();
+                    if (v === "chime") sound.restDone();
+                    setPref({ sound: v });
+                  }}
                 >
-                  {v}
+                  {v === "off" ? "Off" : v === "beep" ? "Beep" : "Chime"}
                 </button>
               ))}
             </div>
           </div>
         </div>
+
         <div className="field">
           <div className="row2">
-            <label>Audio cues</label>
+            <label>3-2-1 ticks</label>
             <Toggle
-              on={state.sound}
-              label="Audio cues"
+              on={state.ticks}
+              label="Countdown ticks"
               onChange={(v) => {
                 sound.unlock();
                 if (v) sound.restTick();
-                setPref({ sound: v });
+                setPref({ ticks: v });
               }}
             />
           </div>
         </div>
+
         <div className="field">
           <div className="row2">
             <label>Vibration</label>

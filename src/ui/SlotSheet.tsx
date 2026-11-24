@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { exercise } from "../state/library";
-import { ladderMath, rungDelta, targetSets, targetWeight } from "../state/formula";
+import { goalText, ladderMath, rungDelta, targetSets, targetWeight } from "../state/formula";
 import { useStore } from "../state/store";
 import type { Slot } from "../state/types";
 import { ExercisePicker } from "./Picker";
@@ -224,26 +224,14 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
         max={50}
         onChange={(repGoal) => patchSlot(dayId, slot.id, { repGoal })}
       />
-      <NumField
-        label="Reps in reserve"
-        value={slot.rir}
-        suffix="rir"
-        step={1}
-        min={0}
-        max={10}
-        onChange={(rir) => patchSlot(dayId, slot.id, { rir })}
-      />
-
       <div className="field">
         <div className="row2">
-          <label>Last set to failure</label>
-          <button
-            className={slot.failLast ? "chip is-on" : "chip"}
-            onClick={() => patchSlot(dayId, slot.id, { failLast: !slot.failLast })}
-            aria-pressed={slot.failLast}
-          >
-            {slot.failLast ? "On" : "Off"}
-          </button>
+          <label>Rep goal on rung {rung}</label>
+          <span className="numfield">
+            <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--ink-2)" }}>
+              {goalText(rung, state.formula)}
+            </span>
+          </span>
         </div>
       </div>
 

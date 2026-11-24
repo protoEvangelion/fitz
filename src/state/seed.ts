@@ -21,11 +21,9 @@ function slot(day: number, i: number, s: SlotSeed): Slot {
     rm10: s.rm10,
     baseWeight: s.baseWeight ?? startingWeight(s.rm10),
     baseSets: s.baseSets ?? 1,
-    capSets: s.capSets ?? 3,
+    capSets: s.capSets ?? 6,
     incLb: s.incLb ?? null,
     repGoal: 15,
-    rir: 3,
-    failLast: true,
   };
 }
 
@@ -47,7 +45,7 @@ const DAY_SEEDS: Array<{
       { role: "Chest Isolation", exerciseId: "ft-cable-flye", rm10: 65, baseWeight: 55 },
       { role: "Horizontal Push", exerciseId: "barbell-bench-med", rm10: 145, baseWeight: 125 },
       { role: "Rear or Side Delts", exerciseId: "barbell-facepull", rm10: 60, baseWeight: 50 },
-      { role: "Horizontal Pull", exerciseId: "barbell-row-bent", rm10: 90, baseWeight: 75, capSets: 5 },
+      { role: "Horizontal Pull", exerciseId: "barbell-row-bent", rm10: 90, baseWeight: 75 },
     ],
   },
   {
@@ -55,7 +53,7 @@ const DAY_SEEDS: Array<{
     focus: "Squat, quad isolation, hamstring isolation, calves, abs",
     bridge: "No rest between day 1 and day 2",
     slots: [
-      { role: "Quad Focused", exerciseId: "barbell-squat-high", rm10: 110, baseWeight: 95, capSets: 5 },
+      { role: "Quad Focused", exerciseId: "barbell-squat-high", rm10: 110, baseWeight: 95 },
       { role: "Quad", exerciseId: "machine-leg-ext", rm10: 30, baseWeight: 25 },
       { role: "Hamstring Isolation", exerciseId: "machine-leg-curl-single", rm10: 30, baseWeight: 25 },
       { role: "Calves", exerciseId: "machine-smith-calf", rm10: 135, baseWeight: 115 },
@@ -79,7 +77,7 @@ const DAY_SEEDS: Array<{
     focus: "Deadlift, pull-throughs, knee extension, calves, abs",
     bridge: "No rest between day 3 and day 4",
     slots: [
-      { role: "Glute", exerciseId: "barbell-deadlift", rm10: 180, baseWeight: 155, capSets: 4 },
+      { role: "Glute", exerciseId: "barbell-deadlift", rm10: 180, baseWeight: 155 },
       { role: "Glute", exerciseId: "ft-pullthrough", rm10: 90, baseWeight: 75 },
       { role: "Quad", exerciseId: "machine-leg-ext", rm10: 30, baseWeight: 25 },
       { role: "Calves", exerciseId: "machine-calf", rm10: 135, baseWeight: 115 },
@@ -103,11 +101,11 @@ const DAY_SEEDS: Array<{
     focus: "Leg curl, calves, overhead press, facepull, shrug",
     bridge: "Rest one day between day 6 and the next rung's day 1",
     slots: [
-      { role: "Hamstring Hinge", exerciseId: "machine-leg-curl", rm10: 90, baseWeight: 75, baseSets: 2, capSets: 4 },
-      { role: "Calves", exerciseId: "machine-smith-calf", rm10: 135, baseWeight: 115, baseSets: 2, capSets: 4 },
-      { role: "Front Delts", exerciseId: "barbell-ohp", rm10: 55, baseWeight: 45, baseSets: 2, capSets: 4 },
-      { role: "Rear or Side Delts", exerciseId: "ft-facepull", rm10: 60, baseWeight: 50, baseSets: 3, capSets: 4 },
-      { role: "Traps", exerciseId: "barbell-shrug", rm10: 110, baseWeight: 95, baseSets: 2, capSets: 4 },
+      { role: "Hamstring Hinge", exerciseId: "machine-leg-curl", rm10: 90, baseWeight: 75, baseSets: 2 },
+      { role: "Calves", exerciseId: "machine-smith-calf", rm10: 135, baseWeight: 115, baseSets: 2 },
+      { role: "Front Delts", exerciseId: "barbell-ohp", rm10: 55, baseWeight: 45, baseSets: 2 },
+      { role: "Rear or Side Delts", exerciseId: "ft-facepull", rm10: 60, baseWeight: 50, baseSets: 3 },
+      { role: "Traps", exerciseId: "barbell-shrug", rm10: 110, baseWeight: 95, baseSets: 2 },
     ],
   },
 ];
@@ -130,9 +128,25 @@ export function seedState(): AppState {
     totalRungs: 6,
     dayId: "d1",
     restSec: 120,
-    sound: true,
+    sound: "beep",
+    ticks: true,
     haptics: true,
-    formula: { mode: "percent", pct: 0.02, stepLb: 5, roundTo: 5, setsCap: 5 },
+    formula: {
+      mode: "percent",
+      pct: 0.02,
+      stepLb: 5,
+      roundTo: 5,
+      setsCap: 6,
+      // Rungs 1-5 keep the sheet's 3/fail; rung 6 is 1 RIR with no failure set.
+      goals: [
+        { rir: 3, fail: true },
+        { rir: 3, fail: true },
+        { rir: 3, fail: true },
+        { rir: 3, fail: true },
+        { rir: 3, fail: true },
+        { rir: 1, fail: false },
+      ],
+    },
     days: buildDays(),
     logs: [],
     createdAt: Date.now(),

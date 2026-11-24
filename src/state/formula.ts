@@ -48,8 +48,13 @@ export function plannedSets(slot: Slot, rung: number, f: Formula, soreness = 1):
   return Math.max(1, targetSets(slot, rung, f) + delta);
 }
 
-export function repText(slot: Slot): string {
-  return slot.failLast ? `${slot.rir} RIR, last set to failure` : `${slot.rir} RIR`;
+export function goalFor(rung: number, f: Formula) {
+  return f.goals[Math.min(Math.max(0, rung - 1), f.goals.length - 1)] ?? { rir: 3, fail: true };
+}
+
+export function goalText(rung: number, f: Formula): string {
+  const g = goalFor(rung, f);
+  return g.fail ? `${g.rir} RIR, last set to failure` : `${g.rir} RIR throughout`;
 }
 
 export function todayKey(d = new Date()): string {

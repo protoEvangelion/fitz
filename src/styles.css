@@ -1287,6 +1287,23 @@ button {
   color: var(--muted);
 }
 
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.goalrow {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  border-top: 1px solid var(--rule-soft);
+}
+
 .numfield {
   display: inline-flex;
   align-items: baseline;

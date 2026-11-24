@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ladderMath, plannedSets, repText, targetSets, targetWeight, todayKey } from "../state/formula";
+import { goalText, ladderMath, plannedSets, targetSets, targetWeight, todayKey } from "../state/formula";
 import { exercise } from "../state/library";
 import { useStore } from "../state/store";
 import type { Day, Slot } from "../state/types";
@@ -265,7 +265,7 @@ function ExerciseRow({
           </div>
 
           <div className="sets-foot">
-            <span className="micro">{repText(slot)}</span>
+            <span className="micro">{goalText(rung, state.formula)}</span>
             <button className="linkish" onClick={onEdit}>
               Edit lift
             </button>

@@ -37,7 +37,7 @@ interface Store {
   patchSlot: (dayId: string, slotId: string, patch: Partial<Slot>) => void;
   swapExercise: (dayId: string, slotId: string, exerciseId: string, rm10: number) => void;
   setFormula: (patch: Partial<Formula>) => void;
-  setPref: (patch: Partial<Pick<AppState, "restSec" | "sound" | "haptics" | "totalRungs">>) => void;
+  setPref: (patch: Partial<Pick<AppState, "restSec" | "sound" | "ticks" | "haptics" | "totalRungs">>) => void;
   resetAll: () => void;
   importState: (raw: string) => { ok: boolean; error?: string };
   exportState: () => string;
@@ -55,13 +55,25 @@ function hydrate(raw: unknown): AppState {
   const stored = s.formula as { mode?: string } | undefined;
   const legacy = !stored?.mode || stored.mode === "compound";
   const formula = { ...seed.formula, ...(s.formula ?? {}) } as typeof seed.formula;
+  const sound: AppState["sound"] =
+    s.sound === "beep" || s.sound === "chime" || s.sound === "off"
+      ? s.sound
+      : s.sound
+        ? "chime"
+        : "off";
   if (legacy) {
     formula.mode = "percent";
     formula.pct = 0.02;
+    formula.setsCap = 6;
+  }
+  if (!Array.isArray(formula.goals) || formula.goals.length !== seed.formula.goals.length) {
+    formula.goals = seed.formula.goals;
   }
   return {
     ...seed,
     ...s,
+    sound,
+    ticks: s.ticks ?? true,
     formula,
     days: s.days.map((d) => ({
       ...d,
@@ -69,6 +81,8 @@ function hydrate(raw: unknown): AppState {
         ...slot,
         targets: slot.targets ?? targetsForRole(slot.role),
         baseWeight: legacy ? startingWeight(slot.rm10, seed.formula.roundTo) : slot.baseWeight,
+        // the old default capped everything at 3 sets; let the ladder run to rung 6
+        capSets: legacy ? Math.max(slot.capSets ?? 6, 6) : (slot.capSets ?? 6),
       })),
     })),
     logs: Array.isArray(s.logs)

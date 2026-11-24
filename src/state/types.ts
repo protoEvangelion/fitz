@@ -52,9 +52,6 @@ export interface Slot {
   incLb: number | null;
   /** Rep target per set. The sheet asks for 15. */
   repGoal: number;
-  /** Reps left in the tank on every set but the last. The sheet says 3. */
-  rir: number;
-  failLast: boolean;
 }
 
 export interface Day {
@@ -83,6 +80,12 @@ export interface SlotLog {
   rating?: number;
 }
 
+/** Rep goal for one rung: reps left in the tank, and whether the last set goes to failure. */
+export interface Goal {
+  rir: number;
+  fail: boolean;
+}
+
 export interface Formula {
   /**
    * percent: weight(rung) = MROUND(base x (1 + pct x (rung - 1)), roundTo)
@@ -94,6 +97,8 @@ export interface Formula {
   stepLb: number;
   roundTo: number;
   setsCap: number;
+  /** One goal per rung, in order. Rung 6 on the sheet is 1 RIR, no failure set. */
+  goals: Goal[];
 }
 
 export interface AppState {
@@ -102,7 +107,10 @@ export interface AppState {
   totalRungs: number;
   dayId: string;
   restSec: number;
-  sound: boolean;
+  /** End-of-rest cue: off, a short double beep, or the three-note chime. */
+  sound: "off" | "beep" | "chime";
+  /** 3-2-1 ticks before the end cue. */
+  ticks: boolean;
   haptics: boolean;
   formula: Formula;
   days: Day[];

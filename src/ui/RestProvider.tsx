@@ -59,17 +59,18 @@ export function RestProvider({ children }: { children: ReactNode }) {
       const whole = Math.ceil(remain);
       if (whole !== lastWhole.current) {
         lastWhole.current = whole;
-        if (whole > 0 && whole <= 3 && state.sound) sound.restTick();
+        if (whole > 0 && whole <= 3 && state.ticks && state.sound !== "off") sound.restTick();
       }
       if (remain <= 0 && !finishing.current) {
         finishing.current = true;
-        if (state.sound) sound.restDone();
+        if (state.sound === "beep") sound.restBeep();
+        else if (state.sound === "chime") sound.restDone();
         if (state.haptics) sound.buzz([60, 60, 140]);
         setEndAt(null);
       }
     }, 200);
     return () => window.clearInterval(id);
-  }, [endAt, state.sound, state.haptics]);
+  }, [endAt, state.sound, state.ticks, state.haptics]);
 
   return (
     <Ctx.Provider value={{ left, total, running: endAt != null, start, add, stop }}>

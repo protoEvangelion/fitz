@@ -32,8 +32,11 @@ sets(r)     = base sets + (r - 1)                    capped by the lift and the 
 The multiplier is applied to rung 1 every time, never to the previous rung: 1.02, 1.04, 1.06, 1.08,
 1.10. So a 145 lb 10RM runs 125 / 130 / 130 / 135 / 135 / 140, which reproduces the sheet's own
 week 2 column on 27 of 30 lifts (the other three are hand-entered jumps in the sheet). `+ lb per
-rung` is still available in Setup, and `base`/`base sets` stay editable per lift. Set ceilings are
-per lift because isolation work stops climbing at 3 sets while the big barbell lifts go to 4-5.
+rung` is still available in Setup, and `base`/`base sets` stay editable per lift.
+
+Sets climb one per rung with no early ceiling (cable fly: 1/2/3/4/5/6), and the rep goal is per
+rung: 3 RIR with the last set to failure for rungs 1-5, 1 RIR throughout on rung 6. Both are
+editable in Setup.
 
 ## Words
 

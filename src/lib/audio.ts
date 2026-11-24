@@ -55,6 +55,13 @@ export function restDone(): void {
   tone(784, 0.3, 0.26, 0.13);
 }
 
+/** Short double beep, the plainer end-of-rest cue. */
+export function restBeep(): void {
+  if (!ctx) return;
+  tone(880, 0.09, 0, 0.13, "square");
+  tone(880, 0.12, 0.16, 0.13, "square");
+}
+
 export function softError(): void {
   if (!ctx) return;
   tone(196, 0.16, 0, 0.08, "sawtooth");
