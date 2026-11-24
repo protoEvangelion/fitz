@@ -153,7 +153,7 @@ function ExerciseRow({
 
   const commit = (i: number) => {
     const parsed = Number.parseInt(drafts[i] ?? "", 10);
-    const reps = Number.isFinite(parsed) && parsed > 0 ? parsed : slot.repGoal;
+    const reps = Number.isFinite(parsed) && parsed > 0 ? Math.min(999, parsed) : slot.repGoal;
     logSet({ dayId: day.id, slotId: slot.id, rung, weight: w, reps });
     setDrafts((d) => ({ ...d, [i]: "" }));
     sound.unlock();
@@ -239,6 +239,15 @@ function ExerciseRow({
                         value={drafts[i] ?? ""}
                         placeholder={String(slot.repGoal)}
                         onChange={(e) => setDrafts((d) => ({ ...d, [i]: e.target.value }))}
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter" || !isNext) return;
+                          e.preventDefault();
+                          commit(i);
+                          // log and move to the next set, so a keyboard can run the whole lift
+                          const next = document.getElementById(`reps-${day.id}-${slot.id}-${i + 1}`);
+                          if (i + 1 < sets) requestAnimationFrame(() => next?.focus());
+                        }}
+                        enterKeyHint="done"
                         aria-label={`Reps for set ${i + 1}`}
                         disabled={!isNext}
                       />
