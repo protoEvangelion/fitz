@@ -25,6 +25,7 @@ export function SorenessSlider({ value, baseSets, planned, onChange }: Props) {
         <span className="micro">Soreness</span>
         <span className="soreness-now num">{value > 0 ? `+${value}` : value}</span>
       </div>
+      <p className="soreness-brief">{entry.brief}</p>
       <div className="timeline-wrap" style={{ ["--pct" as string]: `${pct}%` }}>
         <input
           type="range"
@@ -44,10 +45,11 @@ export function SorenessSlider({ value, baseSets, planned, onChange }: Props) {
           </span>
         ))}
       </div>
-      <p className="soreness-note">
-        {entry.short}
-        {delta !== 0 && planned !== baseSets && ` · sets ${baseSets} > ${planned}`}
-      </p>
+      {delta !== 0 && planned !== baseSets && (
+        <p className="soreness-note">
+          sets {baseSets} &gt; {planned}
+        </p>
+      )}
     </div>
   );
 }
