@@ -103,6 +103,8 @@ export interface Formula {
 
 export interface AppState {
   version: 1;
+  /** Shape of the persisted state. Bumped when a stored value needs rewriting. */
+  schema: number;
   rung: number;
   totalRungs: number;
   dayId: string;

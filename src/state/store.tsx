@@ -53,6 +53,7 @@ function hydrate(raw: unknown): AppState {
   // Older local state used the flat +lb ladder and hand-seeded rung 1 weights.
   // Move it once onto the sheet's own rule: 85% of 10RM, then x1.1 per rung.
   const stored = s.formula as { mode?: string } | undefined;
+  const storedSchema = (s as { schema?: number }).schema ?? 1;
   const legacy = !stored?.mode || stored.mode === "compound";
   const formula = { ...seed.formula, ...(s.formula ?? {}) } as typeof seed.formula;
   const sound: AppState["sound"] =
@@ -64,7 +65,10 @@ function hydrate(raw: unknown): AppState {
   if (legacy) {
     formula.mode = "percent";
     formula.pct = 0.02;
-    formula.setsCap = 6;
+  }
+  // Schema 1 stopped every lift at 3-5 sets. Lift the ceilings once.
+  if (storedSchema < 2) {
+    formula.setsCap = Math.max(6, formula.setsCap);
   }
   if (!Array.isArray(formula.goals) || formula.goals.length !== seed.formula.goals.length) {
     formula.goals = seed.formula.goals;
@@ -72,6 +76,7 @@ function hydrate(raw: unknown): AppState {
   return {
     ...seed,
     ...s,
+    schema: seed.schema,
     sound,
     ticks: s.ticks ?? true,
     formula,
@@ -81,8 +86,9 @@ function hydrate(raw: unknown): AppState {
         ...slot,
         targets: slot.targets ?? targetsForRole(slot.role),
         baseWeight: legacy ? startingWeight(slot.rm10, seed.formula.roundTo) : slot.baseWeight,
-        // the old default capped everything at 3 sets; let the ladder run to rung 6
-        capSets: legacy ? Math.max(slot.capSets ?? 6, 6) : (slot.capSets ?? 6),
+        // schema 1 capped most lifts at 3 sets; let the ladder run to rung 6
+        capSets:
+          storedSchema < 2 ? Math.max(slot.capSets ?? 6, 6) : (slot.capSets ?? 6),
       })),
     })),
     logs: Array.isArray(s.logs)

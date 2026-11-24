@@ -386,7 +386,7 @@ export function SetupView() {
       <p className="footnote" style={{ paddingBottom: 30 }}>
         Fitz · {state.logs.reduce((n, l) => n + l.sets.length, 0)}{" "}
         {state.logs.reduce((n, l) => n + l.sets.length, 0) === 1 ? "set" : "sets"} stored locally ·
-        v1.0
+        build {__BUILD__} UTC
       </p>
 
       {msg && (

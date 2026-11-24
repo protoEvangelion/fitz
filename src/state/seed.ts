@@ -124,6 +124,7 @@ export function buildDays(): Day[] {
 export function seedState(): AppState {
   return {
     version: 1,
+    schema: 2,
     rung: 1,
     totalRungs: 6,
     dayId: "d1",
