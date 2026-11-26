@@ -22,6 +22,27 @@ function dateLine(key: string): string {
 const OPEN_KEY = "fitz:open";
 const SCROLL_KEY = "fitz:scroll";
 
+/**
+ * Nudge the page only if the keyboard actually covers the focused field.
+ * Runs as two one-shots after focus, never as a visualViewport listener:
+ * scrolling fires viewport events, so a listener oscillates the page.
+ */
+function settleField(el: HTMLElement) {
+  if (!el.isConnected) return;
+  const vv = window.visualViewport;
+  if (!vv) return;
+  // Mid-animation the viewport can be a few pixels tall; never chase that.
+  if (vv.height < 160) return;
+  const rect = el.getBoundingClientRect();
+  const top = vv.offsetTop;
+  const bottom = top + vv.height;
+  const pad = 24;
+  let delta = 0;
+  if (rect.bottom > bottom - pad) delta = rect.bottom - (bottom - pad);
+  else if (rect.top < top + pad) delta = rect.top - (top + pad);
+  if (Math.abs(delta) > 2) window.scrollBy({ top: delta, behavior: "auto" });
+}
+
 export function TodayView() {
   const { state, currentDay, setDay, setRung, nextDay, logFor } = useStore();
   // The iPad can suspend the web app and reload it on return. Keep the open
@@ -40,29 +61,6 @@ export function TodayView() {
     if (open.length) sessionStorage.setItem(OPEN_KEY, JSON.stringify(open));
     else sessionStorage.removeItem(OPEN_KEY);
   }, [open]);
-
-  // The keyboard shrinks the visual viewport. Only when it actually covers the
-  // focused reps field do we move the page, and only by what is needed.
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const keepVisible = () => {
-      const el = document.activeElement as HTMLElement | null;
-      if (!el || !el.closest(".setrow")) return;
-      const rect = el.getBoundingClientRect();
-      const top = vv.offsetTop;
-      const bottom = vv.offsetTop + vv.height;
-      const pad = 20;
-      if (rect.bottom > bottom - pad) window.scrollBy(0, rect.bottom - (bottom - pad));
-      else if (rect.top < top + pad) window.scrollBy(0, rect.top - (top + pad));
-    };
-    vv.addEventListener("resize", keepVisible);
-    vv.addEventListener("scroll", keepVisible);
-    return () => {
-      vv.removeEventListener("resize", keepVisible);
-      vv.removeEventListener("scroll", keepVisible);
-    };
-  }, []);
 
   useEffect(() => {
     const saved = Number(sessionStorage.getItem(SCROLL_KEY) ?? "0");
@@ -331,6 +329,10 @@ function ExerciseRow({
                           e.preventDefault();
                           el.focus({ preventScroll: true });
                           el.select();
+                          // Check twice: once the keyboard is up, once after it settles.
+                          [320, 680].forEach((delay) =>
+                            window.setTimeout(() => settleField(el), delay),
+                          );
                         }}
                         onKeyDown={(e) => {
                           if (e.key !== "Enter" || !isNext) return;
