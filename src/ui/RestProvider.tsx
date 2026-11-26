@@ -28,6 +28,7 @@ export function RestProvider({ children }: { children: ReactNode }) {
   const [left, setLeft] = useState(0);
   const lastWhole = useRef<number>(-1);
   const finishing = useRef(false);
+  const REST_KEY = "fitz:restEnd";
 
   const start = useCallback(
     (sec?: number) => {
@@ -40,6 +41,22 @@ export function RestProvider({ children }: { children: ReactNode }) {
     },
     [state.restSec],
   );
+
+  // If iPad discards the app mid-rest, pick the timer back up on return.
+  useEffect(() => {
+    const raw = Number(sessionStorage.getItem(REST_KEY) ?? "0");
+    if (!raw || raw <= Date.now()) return;
+    setTotal(Math.max(1, Math.round((raw - Date.now()) / 1000)));
+    setLeft(Math.max(0, (raw - Date.now()) / 1000));
+    lastWhole.current = Math.ceil((raw - Date.now()) / 1000);
+    finishing.current = false;
+    setEndAt(raw);
+  }, []);
+
+  useEffect(() => {
+    if (endAt) sessionStorage.setItem(REST_KEY, String(endAt));
+    else sessionStorage.removeItem(REST_KEY);
+  }, [endAt, REST_KEY]);
 
   const stop = useCallback(() => {
     setEndAt(null);
@@ -89,8 +106,9 @@ export function RestBar() {
   const rest = useRest();
   if (!rest.running && rest.left <= 0) return null;
   const pct = rest.total ? Math.max(0, Math.min(1, rest.left / rest.total)) : 0;
-  const m = Math.floor(rest.left / 60);
-  const s = String(Math.ceil(rest.left % 60)).padStart(2, "0");
+  const whole = Math.max(0, Math.ceil(rest.left));
+  const m = Math.floor(whole / 60);
+  const s = String(whole % 60).padStart(2, "0");
   return (
     <div className="restbar" role="status" aria-live="off">
       <div className="rest-progress" style={{ width: `${pct * 100}%` }} />

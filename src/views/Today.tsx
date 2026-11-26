@@ -19,10 +19,72 @@ function dateLine(key: string): string {
   });
 }
 
+const OPEN_KEY = "fitz:open";
+const SCROLL_KEY = "fitz:scroll";
+
 export function TodayView() {
   const { state, currentDay, setDay, setRung, nextDay, logFor } = useStore();
-  const [open, setOpen] = useState<string | null>(null);
+  // The iPad can suspend the web app and reload it on return. Keep the open
+  // lift and the scroll position so the session looks untouched.
+  const [open, setOpen] = useState<string[]>(() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(OPEN_KEY) ?? "[]") as string[];
+      return saved.filter((id) => currentDay.slots.some((s) => s.id === id));
+    } catch {
+      return [];
+    }
+  });
   const [editing, setEditing] = useState<Slot | null>(null);
+
+  useEffect(() => {
+    if (open.length) sessionStorage.setItem(OPEN_KEY, JSON.stringify(open));
+    else sessionStorage.removeItem(OPEN_KEY);
+  }, [open]);
+
+  useEffect(() => {
+    const saved = Number(sessionStorage.getItem(SCROLL_KEY) ?? "0");
+    if (!saved) return;
+    let cancelled = false;
+    const apply = () => {
+      if (!cancelled) window.scrollTo(0, saved);
+    };
+    const raf = requestAnimationFrame(apply);
+    // iOS restores the page before fonts settle; re-apply once it has.
+    const timer = window.setTimeout(apply, 140);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    let timer = 0;
+    const save = () => sessionStorage.setItem(SCROLL_KEY, String(Math.round(window.scrollY)));
+    const onScroll = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(save, 120);
+    };
+    const onHide = () => {
+      if (document.visibilityState === "hidden") save();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pagehide", save);
+    document.addEventListener("visibilitychange", onHide);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pagehide", save);
+      document.removeEventListener("visibilitychange", onHide);
+    };
+  }, []);
+
+  // Opening one lift never closes another, so nothing above the row you tapped
+  // moves and the page cannot jump under your finger.
+  const toggleRow = (id: string) => {
+    sound.unlock();
+    setOpen((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
 
   const stats = useMemo(() => {
     let total = 0;
@@ -81,11 +143,8 @@ export function TodayView() {
               slot={slot}
               index={i}
               rung={state.rung}
-              open={open === slot.id}
-              onToggle={() => {
-                sound.unlock();
-                setOpen(open === slot.id ? null : slot.id);
-              }}
+              open={open.includes(slot.id)}
+              onToggle={() => toggleRow(slot.id)}
               onEdit={() => setEditing(slot)}
             />
           ))}
@@ -163,7 +222,7 @@ function ExerciseRow({
   };
 
   return (
-    <li className={open ? "row is-open" : "row"}>
+    <li id={`row-${slot.id}`} className={open ? "row is-open" : "row"}>
       <button className="row-head" onClick={onToggle} aria-expanded={open}>
         <span className="row-idx">{String(index + 1).padStart(2, "0")}</span>
         <span className="row-main">
@@ -232,13 +291,23 @@ function ExerciseRow({
                       <input
                         id={`reps-${day.id}-${slot.id}-${i}`}
                         name={`reps-${slot.id}-${i}`}
-                        type="number"
+                        type="text"
                         inputMode="numeric"
-                        min={0}
-                        max={99}
+                        pattern="[0-9]*"
+                        maxLength={3}
+                        autoComplete="off"
                         value={drafts[i] ?? ""}
                         placeholder={String(slot.repGoal)}
                         onChange={(e) => setDrafts((d) => ({ ...d, [i]: e.target.value }))}
+                        onPointerDown={(e) => {
+                          // Steer clear of the keyboard before focus, so iOS has no
+                          // reason to scroll the page out from under the tap.
+                          const r = e.currentTarget.getBoundingClientRect();
+                          const target = window.innerHeight * 0.3;
+                          if (r.top > window.innerHeight * 0.45) {
+                            window.scrollBy(0, r.top - target);
+                          }
+                        }}
                         onKeyDown={(e) => {
                           if (e.key !== "Enter" || !isNext) return;
                           e.preventDefault();

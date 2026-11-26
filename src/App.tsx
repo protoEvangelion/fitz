@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StoreProvider, useStore } from "./state/store";
 import { RestBar, RestProvider } from "./ui/RestProvider";
 import { TodayView } from "./views/Today";
@@ -33,9 +33,12 @@ function tabFromHash(): Tab {
 function Shell() {
   const { setDay } = useStore();
   const [tab, setTab] = useState<Tab>(tabFromHash);
+  const firstRender = useRef(true);
 
   useEffect(() => {
-    window.scrollTo({ top: 0 });
+    // A restored session keeps its scroll position; only a tab switch starts at the top.
+    if (firstRender.current) firstRender.current = false;
+    else window.scrollTo({ top: 0 });
     document.title = TITLES[tab];
     if (window.location.hash !== `#/${tab}`) {
       window.history.replaceState(null, "", `#/${tab}`);

@@ -661,6 +661,7 @@ button {
 }
 
 .reps input {
+  scroll-margin-block: 18vh;
   width: 54px;
   background: none;
   border: 0;
