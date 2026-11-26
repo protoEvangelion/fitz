@@ -137,7 +137,7 @@ button {
   position: relative;
   max-width: 480px;
   margin: 0 auto;
-  min-height: 100dvh;
+  min-height: 100vh;
   padding-top: var(--safe-t);
   background: var(--bg);
 }
@@ -148,7 +148,7 @@ button {
   }
   .app {
     border-inline: 1px solid var(--rule-soft);
-    min-height: 100dvh;
+    min-height: 100vh;
   }
 }
 
@@ -661,7 +661,6 @@ button {
 }
 
 .reps input {
-  scroll-margin-block: 18vh;
   width: 54px;
   background: none;
   border: 0;
@@ -1840,7 +1839,7 @@ button {
     flex-direction: column;
     position: sticky;
     top: 0;
-    height: 100dvh;
+    height: 100vh;
     padding: calc(24px + var(--safe-t)) 18px 22px;
     border-right: 1px solid var(--rule);
     background: var(--bg);

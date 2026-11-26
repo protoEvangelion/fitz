@@ -41,6 +41,29 @@ export function TodayView() {
     else sessionStorage.removeItem(OPEN_KEY);
   }, [open]);
 
+  // The keyboard shrinks the visual viewport. Only when it actually covers the
+  // focused reps field do we move the page, and only by what is needed.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const keepVisible = () => {
+      const el = document.activeElement as HTMLElement | null;
+      if (!el || !el.closest(".setrow")) return;
+      const rect = el.getBoundingClientRect();
+      const top = vv.offsetTop;
+      const bottom = vv.offsetTop + vv.height;
+      const pad = 20;
+      if (rect.bottom > bottom - pad) window.scrollBy(0, rect.bottom - (bottom - pad));
+      else if (rect.top < top + pad) window.scrollBy(0, rect.top - (top + pad));
+    };
+    vv.addEventListener("resize", keepVisible);
+    vv.addEventListener("scroll", keepVisible);
+    return () => {
+      vv.removeEventListener("resize", keepVisible);
+      vv.removeEventListener("scroll", keepVisible);
+    };
+  }, []);
+
   useEffect(() => {
     const saved = Number(sessionStorage.getItem(SCROLL_KEY) ?? "0");
     if (!saved) return;
@@ -300,13 +323,14 @@ function ExerciseRow({
                         placeholder={String(slot.repGoal)}
                         onChange={(e) => setDrafts((d) => ({ ...d, [i]: e.target.value }))}
                         onPointerDown={(e) => {
-                          // Steer clear of the keyboard before focus, so iOS has no
-                          // reason to scroll the page out from under the tap.
-                          const r = e.currentTarget.getBoundingClientRect();
-                          const target = window.innerHeight * 0.3;
-                          if (r.top > window.innerHeight * 0.45) {
-                            window.scrollBy(0, r.top - target);
-                          }
+                          const el = e.currentTarget;
+                          // Already editing: let the platform place the caret.
+                          if (document.activeElement === el) return;
+                          // Take focus without the browser scrolling to it, so iOS
+                          // cannot yank the page before we have a say.
+                          e.preventDefault();
+                          el.focus({ preventScroll: true });
+                          el.select();
                         }}
                         onKeyDown={(e) => {
                           if (e.key !== "Enter" || !isNext) return;
