@@ -264,7 +264,8 @@ button {
 }
 
 .timeline input[type="range"],
-.soreness input[type="range"] {
+.soreness input[type="range"],
+.rep-slider input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -275,7 +276,8 @@ button {
 }
 
 .timeline input[type="range"]::-webkit-slider-runnable-track,
-.soreness input[type="range"]::-webkit-slider-runnable-track {
+.soreness input[type="range"]::-webkit-slider-runnable-track,
+.rep-slider input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
   background: linear-gradient(
@@ -286,7 +288,8 @@ button {
 }
 
 .timeline input[type="range"]::-webkit-slider-thumb,
-.soreness input[type="range"]::-webkit-slider-thumb {
+.soreness input[type="range"]::-webkit-slider-thumb,
+.rep-slider input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 30px;
   height: 30px;
@@ -298,21 +301,24 @@ button {
 }
 
 .timeline input[type="range"]::-moz-range-track,
-.soreness input[type="range"]::-moz-range-track {
+.soreness input[type="range"]::-moz-range-track,
+.rep-slider input[type="range"]::-moz-range-track {
   height: 4px;
   border-radius: 2px;
   background: var(--rule);
 }
 
 .timeline input[type="range"]::-moz-range-progress,
-.soreness input[type="range"]::-moz-range-progress {
+.soreness input[type="range"]::-moz-range-progress,
+.rep-slider input[type="range"]::-moz-range-progress {
   height: 4px;
   border-radius: 2px;
   background: var(--lime);
 }
 
 .timeline input[type="range"]::-moz-range-thumb,
-.soreness input[type="range"]::-moz-range-thumb {
+.soreness input[type="range"]::-moz-range-thumb,
+.rep-slider input[type="range"]::-moz-range-thumb {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -322,7 +328,8 @@ button {
 }
 
 .timeline input[type="range"]:focus-visible::-webkit-slider-thumb,
-.soreness input[type="range"]:focus-visible::-webkit-slider-thumb {
+.soreness input[type="range"]:focus-visible::-webkit-slider-thumb,
+.rep-slider input[type="range"]:focus-visible::-webkit-slider-thumb {
   outline: 2px solid var(--lime);
   outline-offset: 3px;
 }
@@ -660,20 +667,51 @@ button {
   gap: 6px;
 }
 
-.reps input {
+.rep-logged {
   width: 54px;
+  padding: 2px 0;
   background: none;
   border: 0;
-  border-bottom: 1px solid var(--rule);
-  color: var(--ink);
+  border-bottom: 1px solid var(--rule-soft);
+  color: var(--dim);
+  opacity: 1;
+  -webkit-text-fill-color: var(--dim);
   font-family: var(--mono);
-  font-size: 19px;
+  font-size: 17px;
   font-variant-numeric: tabular-nums;
-  padding: 2px 0;
-  text-align: left;
 }
 
-.reps input::placeholder {
+.rep-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rep-slider input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+}
+
+.rep-slider input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    90deg,
+    var(--lime) 0 var(--rep, 0%),
+    var(--rule) var(--rep, 0%) 100%
+  );
+}
+
+.rep-value {
+  min-width: 24px;
+  text-align: right;
+  font-size: 17px;
+  color: var(--ink);
+}
+
+.rep-unit {
+  font-family: var(--mono);
+  font-size: 11px;
   color: var(--dim);
 }
 
@@ -682,7 +720,6 @@ button {
   color: var(--dim);
   font-family: var(--mono);
 }
-
 .tick {
   height: 38px;
   border: 1px solid var(--rule);
@@ -2046,5 +2083,28 @@ button {
 
   .sheet {
     width: min(600px, calc(100vw - 48px));
+  }
+}
+
+/* ============================================================
+   Desktop browsers draw a floating, blurred toolbar over the top of
+   the page (macOS Safari and Chrome both do this). Never pin our own
+   header under it, and give the page a little clearance so the first
+   row of controls is not sitting behind the glass.
+   ============================================================ */
+
+@media (display-mode: browser) and (min-width: 700px) {
+  .app {
+    padding-top: calc(var(--safe-t) + 56px);
+  }
+
+  .topbar {
+    position: static;
+  }
+}
+
+@media (display-mode: browser) and (min-width: 980px) {
+  .rail {
+    padding-top: calc(56px + var(--safe-t));
   }
 }

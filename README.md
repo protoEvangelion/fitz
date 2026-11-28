@@ -5,8 +5,10 @@ Installable on iPhone, works offline, stores everything in the browser's local d
 
 ## What is in here
 
-- **Today** - the current day at the current rung. Two sliders scrub the six rungs and the six
-  days, so you can start wherever you are in the loop.
+- **Today** - the current day at the current rung, with **Day** and **Rung** dropdowns pinned in the
+  header, so you can start wherever you are in the loop.
+- Sets are logged with a reps slider on the active set only. Future sets stay blank and logged sets
+  show a disabled field with what you did. No keyboard, so no scroll jumps.
 - Each lift carries a soreness check-in (2 to -2, default 1) that trims or adds sets for that
   session only; the weight ladder never moves. Weights come from the formula, not from a table.
   Log a set and the rest timer starts, with audio ticks and a chime. Rate the lift on the sheet's
@@ -93,7 +95,10 @@ It launches full screen with a dark launch image, respects the safe areas, and w
 after the first load.
 
 On iPad the layout adapts: portrait keeps the bottom tabs with a wider measure, plan lifts sit two
-up, and landscape turns the tabs into a left rail. Sheets become centred dialogs above 700px wide. Chrome or Edge on a computer can install the same way from the address bar.
+up, and landscape turns the tabs into a left rail. Sheets become centred dialogs above 700px wide.
+
+In a desktop browser (`display-mode: browser`, 700px and up) the page reserves 56px of clearance and
+the header is not sticky, so nothing of ours sits under Safari's floating toolbar. Chrome or Edge on a computer can install the same way from the address bar.
 
 Deleting the icon can clear this app's website data, so export a backup from Setup before you remove
 it.

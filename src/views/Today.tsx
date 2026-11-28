@@ -21,27 +21,6 @@ function dateLine(key: string): string {
 const OPEN_KEY = "fitz:open";
 const SCROLL_KEY = "fitz:scroll";
 
-/**
- * Nudge the page only if the keyboard actually covers the focused field.
- * Runs as two one-shots after focus, never as a visualViewport listener:
- * scrolling fires viewport events, so a listener oscillates the page.
- */
-function settleField(el: HTMLElement) {
-  if (!el.isConnected) return;
-  const vv = window.visualViewport;
-  if (!vv) return;
-  // Mid-animation the viewport can be a few pixels tall; never chase that.
-  if (vv.height < 160) return;
-  const rect = el.getBoundingClientRect();
-  const top = vv.offsetTop;
-  const bottom = top + vv.height;
-  const pad = 24;
-  let delta = 0;
-  if (rect.bottom > bottom - pad) delta = rect.bottom - (bottom - pad);
-  else if (rect.top < top + pad) delta = rect.top - (top + pad);
-  if (Math.abs(delta) > 2) window.scrollBy({ top: delta, behavior: "auto" });
-}
-
 export function TodayView() {
   const { state, currentDay, nextDay, logFor } = useStore();
   // The iPad can suspend the web app and reload it on return. Keep the open
@@ -198,19 +177,21 @@ function ExerciseRow({
   const logged = (log?.sets ?? []).slice(0, sets);
 
   const [w, setW] = useState(weight);
-  const [drafts, setDrafts] = useState<Record<number, string>>(() =>
-    Object.fromEntries(Array.from({ length: sets }, (_, i) => [i, String(slot.repGoal)])),
-  );
+  const [rep, setRep] = useState(slot.repGoal);
 
   useEffect(() => {
     setW(weight);
   }, [weight]);
 
+  // A new active set (or a new rung) starts from the prescribed reps.
+  useEffect(() => {
+    setRep(slot.repGoal);
+  }, [slot.repGoal, rung, logged.length]);
+
   const commit = (i: number) => {
-    const parsed = Number.parseInt(drafts[i] ?? "", 10);
-    const reps = Number.isFinite(parsed) && parsed > 0 ? Math.min(999, parsed) : slot.repGoal;
+    const reps = Math.min(30, Math.max(1, rep));
     logSet({ dayId: day.id, slotId: slot.id, rung, weight: w, reps });
-    setDrafts((d) => ({ ...d, [i]: "" }));
+    setRep(slot.repGoal);
     sound.unlock();
     if (state.sound) sound.logSet();
     if (state.haptics) sound.buzz(24);
@@ -273,56 +254,37 @@ function ExerciseRow({
               const done = logged[i];
               const isNext = !done && i === logged.length;
               return (
-                <div key={i} className={done ? "setrow is-done" : "setrow"}>
+                <div
+                  key={i}
+                  className={done ? "setrow is-done" : isNext ? "setrow is-next" : "setrow is-idle"}
+                >
                   <span className="set-n">S{i + 1}</span>
                   {done ? (
                     <span className="reps">
-                      <span className="num" style={{ fontSize: 17, color: "var(--ink)" }}>
-                        {done.reps}
-                      </span>
+                      <input
+                        className="rep-logged"
+                        value={done.reps}
+                        disabled
+                        aria-label={`Set ${i + 1} reps`}
+                      />
                       <span>reps · {done.weight} lb</span>
                     </span>
-                  ) : (
-                    <label className="reps">
+                  ) : isNext ? (
+                    <div className="rep-slider" style={{ ["--rep" as string]: `${((rep - 1) / 29) * 100}%` }}>
                       <input
-                        id={`reps-${day.id}-${slot.id}-${i}`}
-                        name={`reps-${slot.id}-${i}`}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        maxLength={3}
-                        autoComplete="off"
-                        value={drafts[i] ?? ""}
-                        placeholder={String(slot.repGoal)}
-                        onChange={(e) => setDrafts((d) => ({ ...d, [i]: e.target.value }))}
-                        onPointerDown={(e) => {
-                          const el = e.currentTarget;
-                          // Already editing: let the platform place the caret.
-                          if (document.activeElement === el) return;
-                          // Take focus without the browser scrolling to it, so iOS
-                          // cannot yank the page before we have a say.
-                          e.preventDefault();
-                          el.focus({ preventScroll: true });
-                          el.select();
-                          // Check twice: once the keyboard is up, once after it settles.
-                          [320, 680].forEach((delay) =>
-                            window.setTimeout(() => settleField(el), delay),
-                          );
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key !== "Enter" || !isNext) return;
-                          e.preventDefault();
-                          commit(i);
-                          // log and move to the next set, so a keyboard can run the whole lift
-                          const next = document.getElementById(`reps-${day.id}-${slot.id}-${i + 1}`);
-                          if (i + 1 < sets) requestAnimationFrame(() => next?.focus());
-                        }}
-                        enterKeyHint="done"
+                        type="range"
+                        min={1}
+                        max={30}
+                        step={1}
+                        value={rep}
+                        onChange={(e) => setRep(Number(e.target.value))}
                         aria-label={`Reps for set ${i + 1}`}
-                        disabled={!isNext}
                       />
-                      <span>reps</span>
-                    </label>
+                      <span className="num rep-value">{rep}</span>
+                      <span className="rep-unit">reps</span>
+                    </div>
+                  ) : (
+                    <span className="rep-idle" aria-hidden />
                   )}
                   <button
                     className={done ? "tick is-on" : "tick"}
