@@ -167,6 +167,45 @@ button {
   border-bottom: 1px solid var(--rule-soft);
 }
 
+.switchers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.switch select {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 34px;
+  padding: 0 26px 0 12px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.switch select:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.switch svg {
+  position: absolute;
+  right: 9px;
+  color: var(--dim);
+  pointer-events: none;
+}
+
 .mark {
   font-family: var(--mono);
   font-size: 12px;
@@ -216,46 +255,7 @@ button {
   max-width: 40ch;
 }
 
-/* ---------- timelines ---------- */
-
-.timelines {
-  display: grid;
-  gap: 2px;
-  margin-top: 18px;
-  padding-inline: 18px;
-  border-top: 1px solid var(--rule-soft);
-}
-
-.timeline {
-  padding: 12px 0 4px;
-}
-
-.timeline + .timeline {
-  border-top: 1px solid var(--rule-soft);
-}
-
-.timeline-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.timeline-now {
-  font-size: 15px;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-
-.timeline-now b {
-  color: var(--lime);
-  font-weight: 600;
-}
-
-.timeline-now span {
-  color: var(--dim);
-  font-size: 11px;
-}
+/* ---------- soreness slider ---------- */
 
 .timeline-wrap {
   display: flex;
@@ -1631,10 +1631,6 @@ button {
     max-width: 52ch;
   }
 
-  .timelines {
-    padding-inline: clamp(24px, 3.2vw, 40px);
-  }
-
   .list {
     border-top-color: var(--rule);
   }
@@ -1824,13 +1820,28 @@ button {
   .app {
     display: grid;
     grid-template-columns: 248px minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
     max-width: none;
     width: 100%;
     padding-top: 0;
   }
 
-  .topbar,
+  .rail {
+    grid-row: 1 / -1;
+  }
+
   .tabbar {
+    display: none;
+  }
+
+  .topbar {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 14px clamp(32px, 3vw, 56px) 12px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .topbar .mark {
     display: none;
   }
 
@@ -1889,6 +1900,7 @@ button {
 
   main.page {
     grid-column: 2;
+    grid-row: 2;
     width: 100%;
     max-width: 1440px;
     margin-inline: 0;
@@ -1946,10 +1958,6 @@ button {
 
   .day-sub {
     font-size: 16px;
-  }
-
-  .timelines {
-    padding-inline: clamp(32px, 3vw, 56px);
   }
 
   .row-head {

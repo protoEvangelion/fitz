@@ -5,7 +5,8 @@ import { TodayView } from "./views/Today";
 import { PlanView } from "./views/Plan";
 import { HistoryView } from "./views/History";
 import { SetupView } from "./views/Setup";
-import { IconLog, IconPlan, IconSetup, IconToday } from "./ui/icons";
+import * as sound from "./lib/audio";
+import { IconChevron, IconLog, IconPlan, IconSetup, IconToday } from "./ui/icons";
 
 type Tab = "today" | "plan" | "log" | "setup";
 
@@ -31,7 +32,7 @@ function tabFromHash(): Tab {
 }
 
 function Shell() {
-  const { setDay } = useStore();
+  const { state, setDay, setRung } = useStore();
   const [tab, setTab] = useState<Tab>(tabFromHash);
   const firstRender = useRef(true);
 
@@ -72,6 +73,46 @@ function Shell() {
 
       <header className="topbar">
         <span className="mark">Fitz</span>
+        {(tab === "today" || tab === "plan") && (
+        <div className="switchers">
+          <label className="switch">
+            <span className="sr-only">Day</span>
+            <select
+              value={state.dayId}
+              onChange={(e) => {
+                setDay(e.target.value);
+                sound.unlock();
+                if (state.sound !== "off") sound.snap();
+              }}
+            >
+              {state.days.map((d) => (
+                <option key={d.id} value={d.id}>
+                  Day {d.n}
+                </option>
+              ))}
+            </select>
+            <IconChevron width={12} height={12} />
+          </label>
+          <label className="switch">
+            <span className="sr-only">Rung</span>
+            <select
+              value={state.rung}
+              onChange={(e) => {
+                setRung(Number(e.target.value));
+                sound.unlock();
+                if (state.sound !== "off") sound.snap();
+              }}
+            >
+              {Array.from({ length: state.totalRungs }, (_, i) => i + 1).map((r) => (
+                <option key={r} value={r}>
+                  Rung {r}
+                </option>
+              ))}
+            </select>
+            <IconChevron width={12} height={12} />
+          </label>
+        </div>
+        )}
       </header>
 
       {tab === "today" && <TodayView />}

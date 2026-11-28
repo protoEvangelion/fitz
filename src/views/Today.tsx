@@ -7,7 +7,6 @@ import * as sound from "../lib/audio";
 import { useRest } from "../ui/RestProvider";
 import { SlotSheet } from "../ui/SlotSheet";
 import { SorenessSlider } from "../ui/SorenessSlider";
-import { Timeline } from "../ui/Timeline";
 import { IconChevron } from "../ui/icons";
 
 function dateLine(key: string): string {
@@ -44,7 +43,7 @@ function settleField(el: HTMLElement) {
 }
 
 export function TodayView() {
-  const { state, currentDay, setDay, setRung, nextDay, logFor } = useStore();
+  const { state, currentDay, nextDay, logFor } = useStore();
   // The iPad can suspend the web app and reload it on return. Keep the open
   // lift and the scroll position so the session looks untouched.
   const [open, setOpen] = useState<string[]>(() => {
@@ -130,30 +129,6 @@ export function TodayView() {
             {dateLine(todayKey())} · {stats.done} of {stats.total} sets done
           </p>
 
-          <div className="timelines">
-            <Timeline
-              label="Rung"
-              value={state.rung}
-              total={state.totalRungs}
-              onChange={setRung}
-              onSnap={() => {
-                sound.unlock();
-                if (state.sound) sound.snap();
-                if (state.haptics) sound.buzz(8);
-              }}
-            />
-            <Timeline
-              label="Day"
-              value={currentDay.n}
-              total={state.days.length}
-              onChange={(n) => setDay(`d${n}`)}
-              onSnap={() => {
-                sound.unlock();
-                if (state.sound) sound.snap();
-                if (state.haptics) sound.buzz(8);
-              }}
-            />
-          </div>
         </section>
 
         <ul className="list">
