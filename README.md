@@ -7,8 +7,9 @@ Installable on iPhone, works offline, stores everything in the browser's local d
 
 - **Today** - the current day at the current week, with **Day** and **Week** dropdowns pinned in the
   header, so you can start wherever you are in the loop.
-- Sets are logged with a reps slider on the active set only. Future sets stay blank and logged sets
-  show a disabled field with what you did. No keyboard, so no scroll jumps.
+- Each lift is one static card: name and weight, its sets as pills, and a single reps slider that is
+  reused for every set. Pending sets are dotted pills, logged sets are solid pills with the reps you
+  did, and the card states how many sets are left. No keyboard, so no scroll jumps.
 - Each lift carries a soreness check-in (2 to -2, default 1) that trims or adds sets for that
   session only; the weight ladder never moves. Weights come from the formula, not from a table.
   Log a set and the rest timer starts, with audio ticks and a chime. Rate the lift on the sheet's

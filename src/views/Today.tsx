@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { goalText, ladderMath, plannedSets, targetSets, targetWeight, todayKey } from "../state/formula";
+import { goalFor, plannedSets, targetWeight, todayKey } from "../state/formula";
 import { exercise } from "../state/library";
 import { useStore } from "../state/store";
-import type { Day, Slot } from "../state/types";
+import { sorenessEntry, type Day, type Slot } from "../state/types";
 import * as sound from "../lib/audio";
 import { useRest } from "../ui/RestProvider";
 import { SlotSheet } from "../ui/SlotSheet";
-import { SorenessSlider } from "../ui/SorenessSlider";
-import { IconChevron } from "../ui/icons";
 
 function dateLine(key: string): string {
   const [y, m, d] = key.split("-").map(Number);
@@ -18,27 +16,13 @@ function dateLine(key: string): string {
   });
 }
 
-const OPEN_KEY = "fitz:open";
 const SCROLL_KEY = "fitz:scroll";
 
 export function TodayView() {
   const { state, currentDay, nextDay, logFor } = useStore();
-  // The iPad can suspend the web app and reload it on return. Keep the open
-  // lift and the scroll position so the session looks untouched.
-  const [open, setOpen] = useState<string[]>(() => {
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(OPEN_KEY) ?? "[]") as string[];
-      return saved.filter((id) => currentDay.slots.some((s) => s.id === id));
-    } catch {
-      return [];
-    }
-  });
+  // The iPad can suspend the web app and reload it on return; the scroll
+  // position is restored so the session looks untouched.
   const [editing, setEditing] = useState<Slot | null>(null);
-
-  useEffect(() => {
-    if (open.length) sessionStorage.setItem(OPEN_KEY, JSON.stringify(open));
-    else sessionStorage.removeItem(OPEN_KEY);
-  }, [open]);
 
   useEffect(() => {
     const saved = Number(sessionStorage.getItem(SCROLL_KEY) ?? "0");
@@ -78,13 +62,6 @@ export function TodayView() {
     };
   }, []);
 
-  // Opening one lift never closes another, so nothing above the row you tapped
-  // moves and the page cannot jump under your finger.
-  const toggleRow = (id: string) => {
-    sound.unlock();
-    setOpen((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
-
   const stats = useMemo(() => {
     let total = 0;
     let done = 0;
@@ -110,16 +87,13 @@ export function TodayView() {
 
         </section>
 
-        <ul className="list">
-          {currentDay.slots.map((slot, i) => (
-            <ExerciseRow
+        <ul className="cards">
+          {currentDay.slots.map((slot) => (
+            <ExerciseCard
               key={slot.id}
               day={currentDay}
               slot={slot}
-              index={i}
               rung={state.rung}
-              open={open.includes(slot.id)}
-              onToggle={() => toggleRow(slot.id)}
               onEdit={() => setEditing(slot)}
             />
           ))}
@@ -149,21 +123,15 @@ export function TodayView() {
   );
 }
 
-function ExerciseRow({
+function ExerciseCard({
   day,
   slot,
-  index,
   rung,
-  open,
-  onToggle,
   onEdit,
 }: {
   day: Day;
   slot: Slot;
-  index: number;
   rung: number;
-  open: boolean;
-  onToggle: () => void;
   onEdit: () => void;
 }) {
   const { state, logFor, logSet, undoSet, setSoreness } = useStore();
@@ -171,160 +139,145 @@ function ExerciseRow({
   const ex = exercise(slot.exerciseId);
   const log = logFor(day.id, slot.id, rung);
   const soreness = log?.rating ?? 1;
-  const baseSets = targetSets(slot, rung, state.formula);
   const sets = plannedSets(slot, rung, state.formula, soreness);
   const weight = targetWeight(slot, rung, state.formula);
+  const goal = goalFor(rung, state.formula);
   const logged = (log?.sets ?? []).slice(0, sets);
+  const left = Math.max(0, sets - logged.length);
 
   const [w, setW] = useState(weight);
   const lastReps = logged.length ? logged[logged.length - 1].reps : null;
   const [rep, setRep] = useState(lastReps ?? slot.repGoal);
+  const entry = sorenessEntry(soreness);
 
   useEffect(() => {
     setW(weight);
   }, [weight]);
 
-  // Next set inherits the reps you just did; a rung change starts over from the
-  // prescribed reps. Deliberately not keyed on logged.length: commit() sets the
-  // value itself, so this must not race it back to the prescription.
+  // The next set inherits what you just did; a new week starts from the script.
   useEffect(() => {
     const last = log?.sets[log.sets.length - 1];
     setRep(last?.reps ?? slot.repGoal);
   }, [rung, slot.repGoal]);
 
-  const commit = (i: number) => {
+  const commit = () => {
+    if (left === 0) return;
     const reps = Math.min(30, Math.max(1, rep));
     logSet({ dayId: day.id, slotId: slot.id, rung, weight: w, reps });
-    // carry the same rep count into the next set
     setRep(reps);
     sound.unlock();
-    if (state.sound) sound.logSet();
+    if (state.sound !== "off") sound.logSet();
     if (state.haptics) sound.buzz(24);
-    if (i < sets - 1) rest.start();
+    if (left > 1) rest.start();
   };
 
   return (
-    <li id={`row-${slot.id}`} className={open ? "row is-open" : "row"}>
-      <button className="row-head" onClick={onToggle} aria-expanded={open}>
-        <span className="row-idx">{String(index + 1).padStart(2, "0")}</span>
-        <span className="row-main">
-          <span className="row-role micro">
-            <i className={`dot eq-${ex.equip}`} />
-            {slot.role}
-          </span>
-          <span className="row-name">{ex.name}</span>
+    <li className="card">
+      <div className="card-main">
+      <p className="card-role micro">
+        <i className={`dot eq-${ex.equip}`} />
+        {slot.role} · {slot.repGoal} reps · {goal.rir} RIR
+      </p>
+
+      <div className="card-row">
+        <button className="card-name" onClick={onEdit}>
+          {ex.name}
+        </button>
+        <div className="card-weight">
+          <button
+            className="step-xs"
+            onClick={() => setW((v) => Math.max(0, v - state.formula.roundTo))}
+            aria-label="Lower weight"
+          >
+            -
+          </button>
+          <span className="num card-weight-value">{w}</span>
+          <span className="card-weight-unit">lb</span>
+          <button
+            className="step-xs"
+            onClick={() => setW((v) => v + state.formula.roundTo)}
+            aria-label="Raise weight"
+          >
+            +
+          </button>
+        </div>
+      </div>
+      </div>
+
+      <div className="card-controls">
+      <div className="card-pills">
+        <div className="pills">
+          {Array.from({ length: sets }, (_, i) => {
+            const done = logged[i];
+            const next = !done && i === logged.length;
+            return (
+              <button
+                key={i}
+                className={`pill${done ? " is-logged" : next ? " is-next" : ""}`}
+                onClick={() => {
+                  if (done && i === logged.length - 1) undoSet(day.id, slot.id, rung);
+                }}
+                disabled={!done || i !== logged.length - 1}
+                aria-label={
+                  done ? `Set ${i + 1}, ${done.reps} reps, tap to undo` : `Set ${i + 1}, not logged`
+                }
+                title={done && i === logged.length - 1 ? "Undo last set" : undefined}
+              >
+                {done ? done.reps : ""}
+              </button>
+            );
+          })}
+        </div>
+        <span className={left ? "card-left" : "card-left is-done"}>
+          {left ? `${left} left` : "done"}
         </span>
-        <span className="row-target">
-          <span className="w">{sets}</span>
-          <span>{sets === 1 ? "set" : "sets"}</span>
-          <span className="sep">·</span>
-          <span className="w">{weight}</span>
-          <span>lb</span>
-          <span className="sep">·</span>
-          <span>{slot.repGoal} reps</span>
-        </span>
-        <span className="row-right">
-          {sets > 1 && (
-            <span className="pips" aria-hidden>
-              {Array.from({ length: sets }, (_, i) => (
-                <i
-                  key={i}
-                  className={`pip${i < logged.length ? " is-on" : i === logged.length ? " is-now" : ""}`}
-                />
-              ))}
-            </span>
-          )}
-          <IconChevron className="chev" />
-        </span>
-      </button>
+      </div>
 
-      {open && (
-        <div className="row-body">
-          <div className="weightbar">
-            <button className="step" onClick={() => setW((v) => Math.max(0, v - state.formula.roundTo))} aria-label="Lower weight">
-              -
-            </button>
-            <span className="weight">
-              <b className="num">{w}</b>
-              <span className="unit">lb</span>
-            </span>
-            <button className="step" onClick={() => setW((v) => v + state.formula.roundTo)} aria-label="Raise weight">
-              +
-            </button>
+      {left > 0 ? (
+        <div className="card-log">
+          <div className="rep-slider" style={{ ["--rep" as string]: `${((rep - 1) / 29) * 100}%` }}>
+            <input
+              type="range"
+              min={1}
+              max={30}
+              step={1}
+              value={rep}
+              onChange={(e) => setRep(Number(e.target.value))}
+              aria-label="Reps for this set"
+            />
           </div>
-          <p className="formula-note">{ladderMath(slot, rung, state.formula)}</p>
-
-          <div className="sets">
-            {Array.from({ length: sets }, (_, i) => {
-              const done = logged[i];
-              const isNext = !done && i === logged.length;
-              return (
-                <div
-                  key={i}
-                  className={done ? "setrow is-done" : isNext ? "setrow is-next" : "setrow is-idle"}
-                >
-                  <span className="set-n">S{i + 1}</span>
-                  {done ? (
-                    <span className="reps">
-                      <input
-                        className="rep-logged"
-                        value={done.reps}
-                        disabled
-                        aria-label={`Set ${i + 1} reps`}
-                      />
-                      <span>reps · {done.weight} lb</span>
-                    </span>
-                  ) : isNext ? (
-                    <div className="rep-slider" style={{ ["--rep" as string]: `${((rep - 1) / 29) * 100}%` }}>
-                      <input
-                        type="range"
-                        min={1}
-                        max={30}
-                        step={1}
-                        value={rep}
-                        onChange={(e) => setRep(Number(e.target.value))}
-                        aria-label={`Reps for set ${i + 1}`}
-                      />
-                      <span className="num rep-value">{rep}</span>
-                      <span className="rep-unit">reps</span>
-                    </div>
-                  ) : (
-                    <span className="rep-idle" aria-hidden />
-                  )}
-                  <button
-                    className={done ? "tick is-on" : "tick"}
-                    onClick={() => {
-                      if (done) {
-                        if (i === logged.length - 1) undoSet(day.id, slot.id, rung);
-                        return;
-                      }
-                      if (isNext) commit(i);
-                    }}
-                    disabled={done ? i !== logged.length - 1 : !isNext}
-                    aria-label={done ? `Undo set ${i + 1}` : `Log set ${i + 1}`}
-                  >
-                    {done ? "done" : "log"}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="sets-foot">
-            <span className="micro">{goalText(rung, state.formula)}</span>
-            <button className="linkish" onClick={onEdit}>
-              Edit lift
-            </button>
-          </div>
-
-          <SorenessSlider
-            value={soreness}
-            baseSets={baseSets}
-            planned={sets}
-            onChange={(v) => setSoreness(day.id, slot.id, rung, v)}
-          />
+          <span className="num rep-value">{rep}</span>
+          <span className="rep-unit">reps</span>
+          <button className="log-btn" onClick={commit}>
+            Log
+          </button>
+        </div>
+      ) : (
+        <div className="card-log is-done">
+          <span className="card-complete">All {sets} sets logged</span>
         </div>
       )}
+
+      <div className="card-sore">
+        <span className="micro">Soreness</span>
+        <span className="num card-sore-value">{soreness > 0 ? `+${soreness}` : soreness}</span>
+        <div className="card-sore-track" style={{ ["--pct" as string]: `${((2 - soreness) / 4) * 100}%` }}>
+          <input
+            type="range"
+            min={0}
+            max={4}
+            step={1}
+            value={2 - soreness}
+            onChange={(e) => setSoreness(day.id, slot.id, rung, 2 - Number(e.target.value))}
+            aria-label="Soreness"
+            aria-valuetext={`${soreness}, ${entry.short}`}
+          />
+        </div>
+        <span className="card-sore-brief" title={entry.long}>
+          {entry.brief}
+        </span>
+      </div>
+      </div>
     </li>
   );
 }

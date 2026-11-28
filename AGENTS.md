@@ -20,10 +20,11 @@ Read this before touching UI. Each rule below is a bug we already paid for.
 3. **No reactive `visualViewport` listeners that scroll.** Scrolling fires viewport events, the
    handler scrolls again, and the page oscillates. If the keyboard must be accommodated, use
    one-shot checks after focus.
-4. **No number inputs for reps on iOS.** They cause scroll jumps. The active set uses a slider;
-   logged sets show a disabled field; future sets render nothing.
-5. **Do not collapse other lifts when one opens.** It moves content above the tap and jerks the
-   page. Several lifts may stay open; open ids and scroll position live in `sessionStorage`.
+4. **No number inputs for reps on iOS.** They cause scroll jumps. Each lift is a static card with
+   one reps slider reused for every set. Logged sets render as solid pills, pending sets as dotted
+   pills, and the next set's pill is lime. Never bring back per-lift expand/collapse.
+5. **Do not make lift cards expand or collapse.** Every card is always at full height; expanding
+   moves the page under your finger. Scroll position lives in `sessionStorage`.
 6. **Do not hardcode training numbers.** Weights are `base = MROUND(10RM x 0.85, 5)` then
    `MROUND(base x (1 + 0.02 x (week - 1)), 5)` applying the multiplier to the base, never to the
    previous week. RIR comes from `formula.goals` per week (3/3/2/2/2/1, failure through week 5).
@@ -40,6 +41,6 @@ for w in 390x844 1024x768 1440x900; do for t in today plan log setup; do
 
 - Screenshot 1440x900 in a browser at scroll 0 **and** mid-scroll: the Day/Week pills must be
   visible and not under the browser toolbar.
-- Log a set with the slider: rest starts, the row flips to a disabled value, the next row becomes
-  the slider.
+- Log a set from a card: the pill turns solid, "N left" decrements, rest starts, and the next set
+  reuses the same slider with the reps you just did.
 - Vercel: keep the 2 newest deployments; `vercel rm <url> --confirm-name <url>` deletes older ones.
