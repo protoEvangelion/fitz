@@ -177,21 +177,26 @@ function ExerciseRow({
   const logged = (log?.sets ?? []).slice(0, sets);
 
   const [w, setW] = useState(weight);
-  const [rep, setRep] = useState(slot.repGoal);
+  const lastReps = logged.length ? logged[logged.length - 1].reps : null;
+  const [rep, setRep] = useState(lastReps ?? slot.repGoal);
 
   useEffect(() => {
     setW(weight);
   }, [weight]);
 
-  // A new active set (or a new rung) starts from the prescribed reps.
+  // Next set inherits the reps you just did; a rung change starts over from the
+  // prescribed reps. Deliberately not keyed on logged.length: commit() sets the
+  // value itself, so this must not race it back to the prescription.
   useEffect(() => {
-    setRep(slot.repGoal);
-  }, [slot.repGoal, rung, logged.length]);
+    const last = log?.sets[log.sets.length - 1];
+    setRep(last?.reps ?? slot.repGoal);
+  }, [rung, slot.repGoal]);
 
   const commit = (i: number) => {
     const reps = Math.min(30, Math.max(1, rep));
     logSet({ dayId: day.id, slotId: slot.id, rung, weight: w, reps });
-    setRep(slot.repGoal);
+    // carry the same rep count into the next set
+    setRep(reps);
     sound.unlock();
     if (state.sound) sound.logSet();
     if (state.haptics) sound.buzz(24);
