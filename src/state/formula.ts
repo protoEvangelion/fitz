@@ -31,8 +31,8 @@ export function targetWeight(slot: Slot, rung: number, f: Formula): number {
 
 /** How this lift moves from rung 1, in words, for the editor. */
 export function ladderText(slot: Slot, f: Formula): string {
-  if (f.mode === "percent") return `+${Math.round(f.pct * 100)}% of base per rung`;
-  return `+${stepFor(slot, f)} lb per rung`;
+  if (f.mode === "percent") return `+${Math.round(f.pct * 100)}% of base per week`;
+  return `+${stepFor(slot, f)} lb per week`;
 }
 
 export function targetSets(slot: Slot, rung: number, f: Formula): number {
@@ -79,11 +79,11 @@ export function ladderMath(slot: Slot, rung: number, f: Formula): string {
     const chain = Array.from({ length: rung }, (_, i) =>
       roundTo(slot.baseWeight * (1 + f.pct * i), f.roundTo),
     );
-    return rung === 1 ? `${slot.baseWeight} lb, rung 1` : `${chain.join(" > ")} lb`;
+    return rung === 1 ? `${slot.baseWeight} lb, week 1` : `${chain.join(" > ")} lb`;
   }
   const step = stepFor(slot, f);
   return rung === 1
-    ? `${slot.baseWeight} lb, rung 1`
+    ? `${slot.baseWeight} lb, week 1`
     : `${slot.baseWeight} + ${step} x ${rung - 1} = ${targetWeight(slot, rung, f)} lb`;
 }
 

@@ -99,7 +99,7 @@ const DAY_SEEDS: Array<{
   {
     title: "Ham Calf Shoulder Focused",
     focus: "Leg curl, calves, overhead press, facepull, shrug",
-    bridge: "Rest one day between day 6 and the next rung's day 1",
+    bridge: "Rest one day between day 6 and the next week's day 1",
     slots: [
       { role: "Hamstring Hinge", exerciseId: "machine-leg-curl", rm10: 90, baseWeight: 75, baseSets: 2 },
       { role: "Calves", exerciseId: "machine-smith-calf", rm10: 135, baseWeight: 115, baseSets: 2 },

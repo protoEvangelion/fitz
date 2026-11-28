@@ -54,14 +54,14 @@ export function SetupView() {
       <section className="lede" style={{ paddingBottom: 14 }}>
         <h1 className="day-title">How the numbers move</h1>
         <p className="day-sub">
-          Rung 1 is 85% of your 10RM. Every rung above adds a set and 2% of that base weight, so
-          rung 6 lands at 1.10x - changing one 10RM moves the whole ladder.
+          Week 1 is 85% of your 10RM. Every week after adds a set and 2% of that base weight, so
+          week 6 lands at 1.10x - changing one 10RM moves the whole ladder.
         </p>
       </section>
 
       <section className="block">
         <h2>The formula</h2>
-        <p>Three lines, no hidden cells. A rung is one pass through the same six days.</p>
+        <p>Three lines, no hidden cells. A week is one pass through the same six days.</p>
         <div className="note">
           <code>base = MROUND(10RM x 0.85, 5)</code>
           {percent ? (
@@ -104,7 +104,7 @@ export function SetupView() {
         {!percent && (
           <div className="field">
             <div className="row2">
-              <label>Pounds per rung</label>
+              <label>Pounds per week</label>
               <div className="segmented">
                 {[2.5, 5, 10].map((v) => (
                   <button
@@ -156,12 +156,12 @@ export function SetupView() {
 
         <div className="goals">
           <p className="micro" style={{ margin: "18px 0 2px" }}>
-            Rep goal by rung
+            Rep goal by week
           </p>
           {state.formula.goals.map((g, i) => (
             <div className="goalrow" key={i}>
               <span className="num" style={{ color: "var(--dim)", fontSize: 11 }}>
-                R{i + 1}
+                W{i + 1}
               </span>
               <div className="segmented">
                 <button
@@ -172,7 +172,7 @@ export function SetupView() {
                       ),
                     })
                   }
-                  aria-label={`Fewer RIR on rung ${i + 1}`}
+                  aria-label={`Fewer RIR on week ${i + 1}`}
                 >
                   -
                 </button>
@@ -185,7 +185,7 @@ export function SetupView() {
                       ),
                     })
                   }
-                  aria-label={`More RIR on rung ${i + 1}`}
+                  aria-label={`More RIR on week ${i + 1}`}
                 >
                   +
                 </button>
@@ -198,7 +198,7 @@ export function SetupView() {
                   })
                 }
                 aria-pressed={g.fail}
-                aria-label={`Last set to failure on rung ${i + 1}`}
+                aria-label={`Last set to failure on week ${i + 1}`}
               >
                 {g.fail ? "to failure" : "no failure"}
               </button>
@@ -207,8 +207,8 @@ export function SetupView() {
         </div>
 
         <p className="footnote" style={{ padding: "14px 0 0" }}>
-          With your numbers: {example.rm10} 10RM gives {example.baseWeight} lb on rung 1,{" "}
-          {nextWeight} on rung 2 ({nextSets} sets), {thirdWeight} on rung 3. The set ceiling stops it
+          With your numbers: {example.rm10} 10RM gives {example.baseWeight} lb on week 1,{" "}
+          {nextWeight} on week 2 ({nextSets} sets), {thirdWeight} on week 3. The set ceiling stops it
           climbing past {example.capSets}.
         </p>
       </section>
@@ -372,13 +372,13 @@ export function SetupView() {
           <button
             className="btn btn-block btn-danger"
             onClick={() => {
-              if (window.confirm("Reset every lift, rung and logged set back to your rung 1 numbers?")) {
+              if (window.confirm("Reset every lift, week and logged set back to your week 1 numbers?")) {
                 resetAll();
-                flash("Back to rung 1.");
+                flash("Back to week 1.");
               }
             }}
           >
-            Reset to rung 1 defaults
+            Reset to week 1 defaults
           </button>
         </div>
       </section>

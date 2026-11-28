@@ -136,7 +136,7 @@ export function TodayView() {
             Next: day {next.n} · {next.title}
           </button>
           <p style={{ marginTop: 10, textAlign: "center", fontSize: 12, color: "var(--muted)" }}>
-            Rung {state.rung} of {state.totalRungs} · built from your rung 1 numbers
+            Week {state.rung} of {state.totalRungs} · built from your week 1 numbers
           </p>
         </div>
       </main>

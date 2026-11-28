@@ -1,11 +1,11 @@
 # Fitz
 
-A pocket training card, built from a spreadsheet. Six days, five lifts each, six rungs.
+A pocket training card, built from a spreadsheet. Six days, five lifts each, six weeks.
 Installable on iPhone, works offline, stores everything in the browser's local database.
 
 ## What is in here
 
-- **Today** - the current day at the current rung, with **Day** and **Rung** dropdowns pinned in the
+- **Today** - the current day at the current week, with **Day** and **Week** dropdowns pinned in the
   header, so you can start wherever you are in the loop.
 - Sets are logged with a reps slider on the active set only. Future sets stay blank and logged sets
   show a disabled field with what you did. No keyboard, so no scroll jumps.
@@ -14,37 +14,35 @@ Installable on iPhone, works offline, stores everything in the browser's local d
   Log a set and the rest timer starts, with audio ticks and a chime. Rate the lift on the sheet's
   five-point scale after the first set.
 - **Plan** - all six days. Tap a lift to swap it from the exercise bank (functional trainer and
-  barbell first, free weights, machines and bodyweight as swaps) or to change its 10RM, rung 1
-  weight, step per rung, set counts, reps and RIR. The swap list is scoped to the slot's body part,
+  barbell first, free weights, machines and bodyweight as swaps) or to change its 10RM, week 1
+  weight, step per week, set counts, reps and RIR. The swap list is scoped to the slot's body part,
   so a chest row only offers chest lifts; "show all" is one tap away when you want to break out.
-- **Log** - every set you have logged, grouped by date, day and rung.
+- **Log** - every set you have logged, grouped by date, day and week.
 - **Setup** - the formula controls, rest and cue preferences, the rating scale legend, backup
-  export/import, and a reset back to rung 1.
+  export/import, and a reset back to week 1.
 
 ## The formula
 
 This is the sheet's own chain, reproduced:
 
 ```
-base        = MROUND(10RM * 0.85, 5)                 rung 1
-weight(r)   = MROUND(base * (1 + 0.02 * (r - 1)), 5)  +2% of the base per rung
+base        = MROUND(10RM * 0.85, 5)                 week 1
+weight(r)   = MROUND(base * (1 + 0.02 * (r - 1)), 5)  +2% of the base per week
 sets(r)     = base sets + (r - 1)                    capped by the lift and the set ceiling
 ```
 
-The multiplier is applied to rung 1 every time, never to the previous rung: 1.02, 1.04, 1.06, 1.08,
+The multiplier is applied to week 1 every time, never to the previous week: 1.02, 1.04, 1.06, 1.08,
 1.10. So a 145 lb 10RM runs 125 / 130 / 130 / 135 / 135 / 140, which reproduces the sheet's own
 week 2 column on 27 of 30 lifts (the other three are hand-entered jumps in the sheet). `+ lb per
-rung` is still available in Setup, and `base`/`base sets` stay editable per lift.
+week` is still available in Setup, and `base`/`base sets` stay editable per lift.
 
-Sets climb one per rung with no early ceiling (cable fly: 1/2/3/4/5/6), and the rep goal is per
-rung: 3 RIR on rungs 1-2, 2 RIR on rungs 3-5, 1 RIR on rung 6, with the last set to failure through
-rung 5 and no failure set on rung 6. Both are editable in Setup.
+Sets climb one per week with no early ceiling (cable fly: 1/2/3/4/5/6), and the rep goal is per
+week: 3 RIR on weeks 1-2, 2 RIR on weeks 3-5, 1 RIR on week 6, with the last set to failure through
+week 5 and no failure set on week 6. Both are editable in Setup.
 
 ## Words
 
-The sheet's weeks are called **rungs** here on purpose: a rung is one pass through the same six
-days, so there is one loop instead of a calendar. Nothing in the UI talks about phases, blocks or
-cycles.
+The sheet calls them **weeks**: one week is one pass through the same six days. Nothing in the UI talks about phases, blocks or cycles.
 
 ## Soreness
 
@@ -56,7 +54,7 @@ cycles.
 | -1 | Still notably sore, a lot of work | -1 |
 | -2 | Still very sore, overkill | -2 |
 
-The check-in is stored per date, lift and rung, so it resets to 1 on the next session and never
+The check-in is stored per date, lift and week, so it resets to 1 on the next session and never
 rewrites past entries.
 
 ## Data

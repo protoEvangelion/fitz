@@ -134,7 +134,7 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
       </div>
 
       <div className="note" style={{ display: "grid", gap: 4 }}>
-        <span className="micro" style={{ color: "var(--muted)" }}>On rung {rung}</span>
+        <span className="micro" style={{ color: "var(--muted)" }}>On week {rung}</span>
         <span className="num" style={{ fontSize: 16, color: "var(--ink)" }}>
           {sets} x {weight} lb · {slot.repGoal} reps
         </span>
@@ -155,7 +155,7 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
                     Math.round((slot.rm10 * 0.85) / state.formula.roundTo) * state.formula.roundTo,
                 })
               }
-              title="Set the rung 1 weight to 85% of this 10RM"
+              title="Set the week 1 weight to 85% of this 10RM"
             >
               85%
             </button>
@@ -180,7 +180,7 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
       </div>
 
       <NumField
-        label="Rung 1 weight"
+        label="Week 1 weight"
         value={slot.baseWeight}
         suffix="lb"
         step={5}
@@ -201,7 +201,7 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
       </div>
 
       <Stepper
-        label="Sets on rung 1"
+        label="Sets on week 1"
         value={slot.baseSets}
         min={1}
         max={8}
@@ -226,7 +226,7 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
       />
       <div className="field">
         <div className="row2">
-          <label>Rep goal on rung {rung}</label>
+          <label>Rep goal on week {rung}</label>
           <span className="numfield">
             <span style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--ink-2)" }}>
               {goalText(rung, state.formula)}
@@ -236,7 +236,7 @@ export function SlotSheet({ dayId, slot: initial, onClose }: Props) {
       </div>
 
       <p className="footnote" style={{ padding: "16px 0 0" }}>
-        Swapping keeps this slot's 10RM. Tap 85% to set the rung 1 weight to the sheet's rule.
+        Swapping keeps this slot's 10RM. Tap 85% to set the week 1 weight to the sheet's rule.
       </p>
     </Sheet>
   );

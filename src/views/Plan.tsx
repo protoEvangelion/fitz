@@ -91,7 +91,7 @@ export function PlanView({ goToday }: { goToday: (dayId: string) => void }) {
       })}
 
       <p className="footnote">
-        Figures are for rung {state.rung}. Drag the rung or day slider on Today to move.
+        Figures are for week {state.rung}. Pick a different week from the dropdown.
       </p>
 
       {editing && <SlotSheet dayId={editing.dayId} slot={editing.slot} onClose={() => setEditing(null)} />}

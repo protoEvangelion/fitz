@@ -56,7 +56,7 @@ export function HistoryView() {
           <h2>Your first entry is one tap away</h2>
           <p>
             Open any exercise, put in your reps, and tap log. The rating you pick is kept with the
-            set so you can see what felt heavy two rungs ago.
+            set so you can see what felt heavy two weeks ago.
           </p>
         </div>
       </main>
@@ -91,7 +91,7 @@ export function HistoryView() {
                   <span className="micro" style={{ color: "var(--ink-2)" }}>
                     Day {day?.n ?? "?"} · {day?.title ?? g.dayId}
                   </span>
-                  <span className="hist-meta">rung {g.rung}</span>
+                  <span className="hist-meta">week {g.rung}</span>
                 </div>
                 {g.logs.map((log) => {
                   const slot = day?.slots.find((s) => s.id === log.slotId);

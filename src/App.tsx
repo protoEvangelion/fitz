@@ -73,7 +73,7 @@ function Shell() {
                 <IconChevron width={12} height={12} />
               </label>
               <label className="switch">
-                <span className="sr-only">Rung</span>
+                <span className="sr-only">Week</span>
                 <select
                   value={state.rung}
                   onChange={(e) => {
@@ -84,7 +84,7 @@ function Shell() {
                 >
                   {Array.from({ length: state.totalRungs }, (_, i) => i + 1).map((r) => (
                     <option key={r} value={r}>
-                      Rung {r}
+                      Week {r}
                     </option>
                   ))}
                 </select>
