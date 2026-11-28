@@ -15,7 +15,8 @@ Read this before touching UI. Each rule below is a bug we already paid for.
    The header and nav stay opaque (`background: var(--bg)`).
 2. **No pinned header in a desktop browser.** In `display-mode: browser` above 700px the page
    reserves 56px of top clearance and `.topbar` is `position: static`. Sticky is for standalone
-   app mode only.
+   app mode only. Above 980px the Day/Rung switchers live in the rail, directly under the FITZ
+   mark, so they sit at the same depth as the wordmark and never in the browser chrome zone.
 3. **No reactive `visualViewport` listeners that scroll.** Scrolling fires viewport events, the
    handler scrolls again, and the page oscillates. If the keyboard must be accommodated, use
    one-shot checks after focus.

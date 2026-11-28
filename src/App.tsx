@@ -52,10 +52,54 @@ function Shell() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  const switchControls = (
+    <>
+              <label className="switch">
+                <span className="sr-only">Day</span>
+                <select
+                  value={state.dayId}
+                  onChange={(e) => {
+                    setDay(e.target.value);
+                    sound.unlock();
+                    if (state.sound !== "off") sound.snap();
+                  }}
+                >
+                  {state.days.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      Day {d.n}
+                    </option>
+                  ))}
+                </select>
+                <IconChevron width={12} height={12} />
+              </label>
+              <label className="switch">
+                <span className="sr-only">Rung</span>
+                <select
+                  value={state.rung}
+                  onChange={(e) => {
+                    setRung(Number(e.target.value));
+                    sound.unlock();
+                    if (state.sound !== "off") sound.snap();
+                  }}
+                >
+                  {Array.from({ length: state.totalRungs }, (_, i) => i + 1).map((r) => (
+                    <option key={r} value={r}>
+                      Rung {r}
+                    </option>
+                  ))}
+                </select>
+                <IconChevron width={12} height={12} />
+              </label>
+    </>
+  );
+
   return (
     <div className="app">
       <aside className="rail">
         <span className="mark rail-mark">Fitz</span>
+        {(tab === "today" || tab === "plan") && (
+          <div className="switchers rail-switchers">{switchControls}</div>
+        )}
         <nav className="rail-nav" aria-label="Sections">
           {TABS.map(({ id, label, Icon }) => (
             <button
@@ -74,44 +118,7 @@ function Shell() {
       <header className="topbar">
         <span className="mark">Fitz</span>
         {(tab === "today" || tab === "plan") && (
-        <div className="switchers">
-          <label className="switch">
-            <span className="sr-only">Day</span>
-            <select
-              value={state.dayId}
-              onChange={(e) => {
-                setDay(e.target.value);
-                sound.unlock();
-                if (state.sound !== "off") sound.snap();
-              }}
-            >
-              {state.days.map((d) => (
-                <option key={d.id} value={d.id}>
-                  Day {d.n}
-                </option>
-              ))}
-            </select>
-            <IconChevron width={12} height={12} />
-          </label>
-          <label className="switch">
-            <span className="sr-only">Rung</span>
-            <select
-              value={state.rung}
-              onChange={(e) => {
-                setRung(Number(e.target.value));
-                sound.unlock();
-                if (state.sound !== "off") sound.snap();
-              }}
-            >
-              {Array.from({ length: state.totalRungs }, (_, i) => i + 1).map((r) => (
-                <option key={r} value={r}>
-                  Rung {r}
-                </option>
-              ))}
-            </select>
-            <IconChevron width={12} height={12} />
-          </label>
-        </div>
+          <div className="switchers">{switchControls}</div>
         )}
       </header>
 
